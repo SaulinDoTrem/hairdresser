@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 07/07/2023 às 03:36
+-- Tempo de geração: 08/07/2023 às 01:48
 -- Versão do servidor: 10.4.28-MariaDB
 -- Versão do PHP: 8.2.4
 
@@ -16,6 +16,10 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
+
+
+CREATE DATABASE IF NOT EXISTS `hairdresser` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+USE `hairdresser`;
 
 --
 -- Banco de dados: `hairdresser`
@@ -179,7 +183,7 @@ INSERT INTO `uf` (`id`, `nome`, `sigla`) VALUES
 --
 ALTER TABLE `agendamento`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_agendamento__horario__servico_id` (`horario`,`servico_id`),
+  ADD UNIQUE KEY `idx_agendamento__horario__servico_id` (`horario`,`servico_id`) USING BTREE,
   ADD KEY `fk_agendamento__cliente_id` (`cliente_id`),
   ADD KEY `fk_agendamento__servico_id` (`servico_id`);
 
@@ -188,28 +192,28 @@ ALTER TABLE `agendamento`
 --
 ALTER TABLE `bairro`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_bairro__cidade_id__nome` (`cidade_id`,`nome`);
+  ADD UNIQUE KEY `idx_bairro__cidade_id__nome` (`cidade_id`,`nome`) USING BTREE;
 
 --
 -- Índices de tabela `cidade`
 --
 ALTER TABLE `cidade`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_cidade__uf_id__nome` (`uf_id`,`nome`);
+  ADD UNIQUE KEY `idx_cidade__uf_id__nome` (`uf_id`,`nome`) USING BTREE;
 
 --
 -- Índices de tabela `cliente`
 --
 ALTER TABLE `cliente`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_cliente__nome` (`nome`);
+  ADD UNIQUE KEY `idx_cliente__nome` (`nome`) USING BTREE;
 
 --
 -- Índices de tabela `funcionario`
 --
 ALTER TABLE `funcionario`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_funcionario__usuario` (`usuario`),
+  ADD UNIQUE KEY `idx_funcionario__usuario` (`usuario`) USING BTREE,
   ADD KEY `fk_funcionario__salao_id` (`salao_id`);
 
 --
@@ -217,7 +221,7 @@ ALTER TABLE `funcionario`
 --
 ALTER TABLE `salao`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_salao__logradouro__numero` (`logradouro`,`numero`),
+  ADD UNIQUE KEY `idx_salao__logradouro__numero` (`logradouro`,`numero`) USING BTREE,
   ADD KEY `fk_salao__bairro_id` (`bairro_id`);
 
 --
@@ -225,7 +229,7 @@ ALTER TABLE `salao`
 --
 ALTER TABLE `servico`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_servico__descricao__funcionario_id` (`descricao`,`funcionario_id`),
+  ADD UNIQUE KEY `idx_servico__descricao__funcionario_id` (`descricao`,`funcionario_id`) USING BTREE,
   ADD KEY `fk_servico__funcionario_id` (`funcionario_id`);
 
 --
@@ -233,15 +237,15 @@ ALTER TABLE `servico`
 --
 ALTER TABLE `telefone`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_telefone__funcionario_id__ddd__numero` (`funcionario_id`,`ddd`,`numero`);
+  ADD UNIQUE KEY `idx_telefone__funcionario_id__ddd__numero` (`funcionario_id`,`ddd`,`numero`) USING BTREE;
 
 --
 -- Índices de tabela `uf`
 --
 ALTER TABLE `uf`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_uf__nome` (`nome`),
-  ADD KEY `idx_uf__sigla` (`sigla`);
+  ADD UNIQUE KEY `idx_uf__nome` (`nome`) USING BTREE,
+  ADD UNIQUE KEY `idx_uf__sigla` (`sigla`) USING BTREE;
 
 --
 -- AUTO_INCREMENT para tabelas despejadas
