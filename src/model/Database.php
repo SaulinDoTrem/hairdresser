@@ -95,6 +95,7 @@
 
             $query = "SELECT " . $select . " FROM {$this->tableName} " . $where . $orderBy . $limit .";";
 
+
             return $this->execute($query, "Erro ao tentar fazer leitura da tabela {$this->tableName}.")->fetchAll(PDO::FETCH_ASSOC);
         }
     }

@@ -2,16 +2,27 @@
     require __DIR__.'/../../vendor/autoload.php';
 
     use Hairdresser\Model\Database;
+    use Hairdresser\Model\Create\City;
 
-    $database = new Database("cidade");
+    $array = [
+        "id"=> 3,
+        "ferative_unit_id"=> "askldjhasjkdhajks",
+        "name" => "asdasdasdas"
+    ];
 
-    $lastInsertId = $database->insert(["uf_id"=>1, "nome"=> "teste"]);
+    unset($array["id"]);
 
-    echo "lastInsertId = {$lastInsertId} <br>";
+    var_dump($array);
 
-    echo "affectedRows do update = {$database->update($lastInsertId, ["nome"=> "outro teste"])} <br>";
+    // $database = new Database("cidade");
 
-    var_dump($database->select(["id","nome","uf_id"], "id = {$lastInsertId}", "nome DESC", "0,1"));
+    // $lastInsertId = $database->insert(["uf_id"=>1, "nome"=> "teste"]);
 
-    echo "<br>affectedRows do delete = {$database->delete($lastInsertId)} <br>";
+    // echo "lastInsertId = {$lastInsertId} <br>";
+
+    // echo "affectedRows do update = {$database->update($lastInsertId, ["nome"=> "outro teste"])} <br>";
+
+    // var_dump($database->select(["id","nome","uf_id"], "id = {$lastInsertId}", "nome DESC", "0,1"));
+
+    // echo "<br>affectedRows do delete = {$database->delete($lastInsertId)} <br>";
 ?>
