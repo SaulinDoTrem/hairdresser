@@ -3,6 +3,7 @@
     namespace Hairdresser\Model;
     use PDOException;
     use PDO;
+    use PDOStatement;
 
     class Database {
         private PDO $connection;
@@ -13,7 +14,7 @@
             $this->setConnection();
         }
 
-        public function setConnection() {
+        public function setConnection():void {
             try {
                 $configJson = json_decode(file_get_contents("../../config.json"), true);
 
@@ -29,11 +30,11 @@
             }
         }
 
-        public function getConnection() {
+        public function getConnection():PDO {
             return $this->connection;
         }
 
-        public function execute(string $query, string $errorMessage, array $params=[]) {
+        public function execute(string $query, string $errorMessage, array $params=[]):PDOStatement {
             try{
                 $stmt = $this->connection->prepare($query);
                 $stmt->execute($params);
@@ -43,7 +44,7 @@
             }
         }
 
-        public function insert(array $tableData) {
+        public function insert(array $tableData):int {
             if(empty($tableData))
                 die("Dados não foram recebidos com sucesso.");
 
@@ -57,7 +58,7 @@
             return $this->connection->lastInsertId();
         }
 
-        public function update(int $id, array $tableData) {
+        public function update(int $id, array $tableData):int {
             if(empty($id) || empty($tableData))
                 die("O Id ou os dados não foram recebidos com sucesso.");
 
@@ -71,7 +72,7 @@
             return $this->execute($query, "Erro ao atualizar id {$id} na tabela {$this->tableName}.", $params)->rowCount();
         }
 
-        public function delete(int $id) {
+        public function delete(int $id):int {
             if(empty($id))
                 die("Id vazio ou nulo.");
 
@@ -80,7 +81,7 @@
             return $this->execute($query, "Erro ao deletar id {$id} da tabela {$this->tableName}.", [$id])->rowCount();
         }
 
-        public function select(array $columnNames, string $where = null, string $orderBy = null, string $limit = null) {
+        public function select(array $columnNames, string $where = null, string $orderBy = null, string $limit = null):array {
             if(empty($columnNames))
                 die("Dados não foram recebidos com sucesso.");
 

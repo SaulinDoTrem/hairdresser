@@ -1,9 +1,10 @@
 <?php
 
-    namespace Hairdresser\Model\Create;
+    namespace Hairdresser\Model;
     use Hairdresser\Model\AbstractEntity;
 
     class City extends AbstractEntity {
+        protected string $tableName = "city";
         private int $federative_unit_id;
         private string $name;
 
@@ -23,7 +24,7 @@
             $this->name = $name;
         }
 
-        public function toMap() {
+        public function toMap():array {
             return [
                     "id"=> $this->getId(),
                     "ferative_unit_id"=> $this->getFederativeUnitId(),
@@ -31,8 +32,10 @@
                 ];
         }
 
-        public function fromMap(array $data) {
-            echo "a";
+        public function fromMap(array $data):void {
+            $this->setId($data["id"]);
+            $this->setFederativeUnitId($data["ferative_unit_id"]);
+            $this->setName($data["name"]);
         }
     }
 ?>

@@ -2,15 +2,11 @@
     require __DIR__.'/../../vendor/autoload.php';
 
     use Hairdresser\Model\Database;
-    use Hairdresser\Model\Create\City;
+    use Hairdresser\Model\City;
 
-    $array = [
-        "id"=> 3,
-        "ferative_unit_id"=> "askldjhasjkdhajks",
-        "name" => "asdasdasdas"
-    ];
+    $city = new City();
 
-    unset($array["id"]);
+    $array = $city->toMap();
 
     var_dump($array);
 
