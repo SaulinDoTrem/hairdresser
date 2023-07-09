@@ -33,7 +33,7 @@
             return $this->connection;
         }
 
-        public function execute(string $query, array $params=[], string $errorMessage) {
+        public function execute(string $query, string $errorMessage, array $params=[]) {
             try{
                 $stmt = $this->connection->prepare($query);
                 $stmt->execute($params);
@@ -43,49 +43,59 @@
             }
         }
 
-        public function insert(array $data) {
-            if(empty($data))
-                die("Informações não recebidas.");
+        public function insert(array $tableData) {
+            if(empty($tableData))
+                die("Dados não foram recebidos com sucesso.");
 
-            $fields = implode(", ", array_keys($data));
-            $binds = implode(", ", array_pad([], count(array_keys($data)), "?"));
+            $fields = implode(", ", array_keys($tableData));
+            $binds = implode(", ", array_pad([], count(array_keys($tableData)), "?"));
 
             $query = "INSERT INTO " . $this->tableName . "(" . $fields . ") VALUES (" . $binds .");";
 
-            $this->execute($query, array_values($data), "Erro ao inserir na tabela {$this->tableName}.");
+            $this->execute($query, "Erro ao inserir na tabela {$this->tableName}.", array_values($tableData));
 
             return $this->connection->lastInsertId();
         }
 
-        public function update(int $id, array $data) {
-            if(empty($id) || empty($data))
+        public function update(int $id, array $tableData) {
+            if(empty($id) || empty($tableData))
                 die("O Id ou os dados não foram recebidos com sucesso.");
 
-            $columns = count($data) > 1 ? implode("=?, ", array_keys($data)) : array_keys($data)[0] . " = ?";
+            $columns = count($tableData) > 1 ? implode(" = ?, ", array_keys($tableData)) : array_keys($tableData)[0] . " = ?";
 
             $query = "UPDATE {$this->tableName} SET " . $columns .  " WHERE id = ?";
 
-            $params = array_values($data);
+            $params = array_values($tableData);
             array_push($params, $id);
 
-            return $this->execute($query, $params, "Erro ao atualizar id {$id} na tabela {$this->tableName}.")->rowCount();
+            return $this->execute($query, "Erro ao atualizar id {$id} na tabela {$this->tableName}.", $params)->rowCount();
         }
 
         public function delete(int $id) {
             if(empty($id))
-                die("Id vazio ou nulo");
+                die("Id vazio ou nulo.");
 
             $query = "DELETE FROM {$this->tableName} WHERE id = ?";
 
-            return $this->execute($query, [$id], "Erro ao deletar id {$id} da tabela {$this->tableName}.")->rowCount();
+            return $this->execute($query, "Erro ao deletar id {$id} da tabela {$this->tableName}.", [$id])->rowCount();
         }
 
-        public function select(array $columns, string $where = null, string $orderBy = null, string $limit = null) {
+        public function select(array $columnNames, string $where = null, string $orderBy = null, string $limit = null) {
+            if(empty($columnNames))
+                die("Dados não foram recebidos com sucesso.");
 
-            //$where = "WHERE";
+            $select = implode(", ", $columnNames);
+            function buildQueryText($text, $prefix) {
+                return $text ? $prefix . " " . $text . " " : "";
+            };
 
+            $where = buildQueryText($where,"WHERE");
+            $orderBy = buildQueryText($orderBy,"ORDER BY");
+            $limit = buildQueryText($limit,"LIMIT");
 
-            //$query = "SELECT (o que selecionar) FROM {$this->tableName} WHERE (wheres) ORDER BY (order) LIMIT (limits)";
+            $query = "SELECT " . $select . " FROM {$this->tableName} " . $where . $orderBy . $limit .";";
+
+            return $this->execute($query, "Erro ao tentar fazer leitura da tabela {$this->tableName}.")->fetchAll(PDO::FETCH_ASSOC);
         }
     }
 

@@ -9,7 +9,9 @@
 
     echo "lastInsertId = {$lastInsertId} <br>";
 
-    echo "affectedRows do update = {$database->update($lastInsertId, ["nome"=> "outro teste"])}";
+    echo "affectedRows do update = {$database->update($lastInsertId, ["nome"=> "outro teste"])} <br>";
 
-    //echo "<br>affectedRows do delete = {$database->delete($lastInsertId)} <br>";
+    var_dump($database->select(["id","nome","uf_id"], "id = {$lastInsertId}", "nome DESC", "0,1"));
+
+    echo "<br>affectedRows do delete = {$database->delete($lastInsertId)} <br>";
 ?>
