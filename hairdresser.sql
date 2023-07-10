@@ -7,8 +7,7 @@
 -- Versão do servidor: 10.4.28-MariaDB
 -- Versão do PHP: 8.2.4
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";~
-SET AUTO_COMMIT = 0;
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -19,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 
-
+DROP DATABASE IF EXISTS hairdresser;
 CREATE DATABASE IF NOT EXISTS hairdresser DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 USE hairdresser;
 
@@ -157,7 +156,7 @@ CREATE TABLE federative_unit (
 --
 ALTER TABLE schedule
   ADD PRIMARY KEY (id),
-  ADD UNIQUE KEY idx_schedule__time__task_id (time,task_id) USING BTREE;
+  ADD UNIQUE KEY idx_schedule__date__task_id (date,task_id) USING BTREE;
 
 --
 -- Índices de tabela neighborhood
@@ -356,5 +355,3 @@ INSERT INTO federative_unit (name, acronym) VALUES
 ('Mato Grosso', 'MT'),
 ('Goiás', 'GO'),
 ('Distrito Federal', 'DF');
-
-COMMIT;
