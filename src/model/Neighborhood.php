@@ -2,33 +2,35 @@
 
     namespace Hairdresser\Model;
 
-    class FederativeUnit extends AbstractEntity{
+    class Neighborhood extends AbstractEntity{
+        private City $city;
         private string $name;
-        private string $acronym;
+        public function getCity():City {
+            return $this->city;
+        }
+        public function setCity(City $city):void {
+            $this->city = $city;
+        }
         public function getName():string {
             return $this->name;
         }
         public function setName(string $name):void {
             $this->name = $name;
         }
-        public function getAcronym():string {
-            return $this->acronym;
-        }
-        public function setAcronym(string $acronym):void {
-            $this->acronym = $acronym;
-        }
         public function toMap():array {
             return [
                 "id"=> $this->getId(),
-                "name"=> $this->getName(),
-                "acronym"=> $this->getAcronym()
+                "city"=> $this->getCity()->toMap(),
+                "name"=> $this->getName()
             ];
         }
         public function fromMap(array $data):void {
+            $city = new City();
+            $city->fromMap($data["city"]);
+
             $this->setId($data["id"]);
+            $this->setCity($city);
             $this->setName($data["name"]);
-            $this->setAcronym($data["acronym"]);
         }
     }
-
 ?>

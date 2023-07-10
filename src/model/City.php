@@ -1,31 +1,23 @@
 <?php
 
     namespace Hairdresser\Model;
-    use Hairdresser\Model\AbstractEntity;
 
     class City extends AbstractEntity {
         protected string $tableName = "city";
-        private FederativeUnit $federative_unit;
+        private FederativeUnit $federativeUnit;
         private string $name;
-
         public function getFederativeUnit():FederativeUnit {
-            return $this->federative_unit;
+            return $this->federativeUnit;
         }
-
-        public function setFederativeUnit(array $federative_unitData):void {
-            $federative_unit = new FederativeUnit();
-            $federative_unit->fromMap($federative_unitData);
-            $this->federative_unit = $federative_unit;
+        public function setFederativeUnit(FederativeUnit $federativeUnit):void {
+            $this->federativeUnit = $federativeUnit;
         }
-
         public function getName():string {
             return $this->name;
         }
-
-        public function setName($name):void {
+        public function setName(string $name):void {
             $this->name = $name;
         }
-
         public function toMap():array {
             return [
                     "id"=> $this->getId(),
@@ -33,10 +25,12 @@
                     "name" => $this->getName()
                 ];
         }
-
         public function fromMap(array $data):void {
+            $federativeUnit = new FederativeUnit();
+            $federativeUnit->fromMap($data["federative_unit"]);
+
             $this->setId($data["id"]);
-            $this->setFederativeUnit($data["federative_unit"]);
+            $this->setFederativeUnit($federativeUnit);
             $this->setName($data["name"]);
         }
     }
