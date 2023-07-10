@@ -24,19 +24,19 @@
         public function getBeautySalon():BeautySalon {
             return $this->beautySalon;
         }
-        public function setBeautySalon(BeautySalon $beautySalon) {
+        public function setBeautySalon(BeautySalon $beautySalon):void {
             $this->beautySalon = $beautySalon;
         }
         public function getBeginOfficeRoutine():DateTime {
             return $this->beginOfficeRoutine;
         }
-        public function setBeginOfficeRoutine(DateTime $beginOfficeRoutine) {
+        public function setBeginOfficeRoutine(DateTime $beginOfficeRoutine):void {
             $this->beginOfficeRoutine = $beginOfficeRoutine;
         }
         public function getEndOfficeRoutine():DateTime {
             return $this->endOfficeRoutine;
         }
-        public function setEndOfficeRoutine(DateTime $endOfficeRoutine) {
+        public function setEndOfficeRoutine(DateTime $endOfficeRoutine):void {
             $this->endOfficeRoutine = $endOfficeRoutine;
         }
         public function toMap():array {

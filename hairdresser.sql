@@ -37,7 +37,7 @@ CREATE TABLE schedule (
   id int(11) NOT NULL,
   person_id int(11) NOT NULL,
   task_id int(11) NOT NULL,
-  time timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  date timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -88,8 +88,8 @@ CREATE TABLE employee (
   person_id int(11) NOT NULL,
   beauty_salon_id int(11) NOT NULL,
   name varchar(255) NOT NULL,
-  inicio_expediente time DEFAULT NULL,
-  final_expediente time DEFAULT NULL
+  begin_office_routine time DEFAULT NULL,
+  end_office_routine time DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------

@@ -9,19 +9,19 @@
         public function getPerson():Person {
             return $this->person;
         }
-        public function setPerson(Person $person) {
+        public function setPerson(Person $person):void {
             $this->person = $person;
         }
         public function getAreaNumber():int {
             return $this->areaNumber;
         }
-        public function setAreaNumber(int $areaNumber) {
+        public function setAreaNumber(int $areaNumber):void {
             $this->areaNumber = $areaNumber;
         }
         public function getNumber():int {
             return $this->number;
         }
-        public function setNumber(int $number) {
+        public function setNumber(int $number):void {
             $this->number = $number;
         }
         public function toMap():array {
