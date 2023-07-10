@@ -17,7 +17,6 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
-
 CREATE DATABASE IF NOT EXISTS `hairdresser` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 USE `hairdresser`;
 
@@ -28,331 +27,332 @@ USE `hairdresser`;
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `agendamento`
+-- Estrutura para tabela `schedule`
 --
 
-CREATE TABLE `agendamento` (
+CREATE TABLE `schedule` (
   `id` int(11) NOT NULL,
-  `cliente_id` int(11) NOT NULL,
-  `servico_id` int(11) NOT NULL,
-  `horario` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `customer_id` int(11) NOT NULL,
+  `task_id` int(11) NOT NULL,
+  `time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `bairro`
+-- Estrutura para tabela `neighborhood`
 --
 
-CREATE TABLE `bairro` (
+CREATE TABLE `neighborhood` (
   `id` int(11) NOT NULL,
-  `cidade_id` int(11) NOT NULL,
-  `nome` varchar(60) NOT NULL
+  `city_id` int(11) NOT NULL,
+  `name` varchar(60) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `cidade`
+-- Estrutura para tabela `city`
 --
 
-CREATE TABLE `cidade` (
+CREATE TABLE `city` (
   `id` int(11) NOT NULL,
-  `uf_id` int(11) NOT NULL,
-  `nome` varchar(60) NOT NULL
+  `federative_unit_id` int(11) NOT NULL,
+  `name` varchar(60) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `cliente`
+-- Estrutura para tabela `customer`
 --
 
-CREATE TABLE `cliente` (
+CREATE TABLE `customer` (
   `id` int(11) NOT NULL,
-  `nome` varchar(255) NOT NULL
+  `name` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `funcionario`
+-- Estrutura para tabela `employee`
 --
 
-CREATE TABLE `funcionario` (
+CREATE TABLE `employee` (
   `id` int(11) NOT NULL,
-  `nome` varchar(255) NOT NULL,
-  `salao_id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `beauty_salon_id` int(11) NOT NULL,
   `inicio_expediente` time NOT NULL,
   `final_expediente` time NOT NULL,
-  `usuario` varchar(30) NOT NULL,
-  `senha` varchar(64) NOT NULL
+  `user_name` varchar(30) NOT NULL,
+  `password` varchar(64) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `salao`
+-- Estrutura para tabela `beauty_salon`
 --
 
-CREATE TABLE `salao` (
+CREATE TABLE `beauty_salon` (
   `id` int(11) NOT NULL,
-  `bairro_id` int(11) NOT NULL,
-  `nome` varchar(60) NOT NULL,
-  `logradouro` varchar(255) DEFAULT NULL,
-  `numero` int(11) DEFAULT NULL
+  `neighborhood_id` int(11) NOT NULL,
+  `name` varchar(60) NOT NULL,
+  `public_place` varchar(255) DEFAULT NULL,
+  `number` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `servico`
+-- Estrutura para tabela `task`
 --
 
-CREATE TABLE `servico` (
+CREATE TABLE `task` (
   `id` int(11) NOT NULL,
-  `funcionario_id` int(11) NOT NULL,
-  `tempo_estimado_minutos` int(11) NOT NULL,
-  `descricao` varchar(30) NOT NULL
+  `employee_id` int(11) NOT NULL,
+  `estimated_minutes` int(11) NOT NULL,
+  `description` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `telefone`
+-- Estrutura para tabela `telephone`
 --
 
-CREATE TABLE `telefone` (
+CREATE TABLE `telephone` (
   `id` int(11) NOT NULL,
-  `funcionario_id` int(11) NOT NULL,
-  `ddd` int(11) NOT NULL,
-  `numero` int(11) NOT NULL
+  `employee_id` int(11) NOT NULL,
+  `area_number` int(11) NOT NULL,
+  `number` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `uf`
+-- Estrutura para tabela `federative_unit`
 --
 
-CREATE TABLE `uf` (
+CREATE TABLE `federative_unit` (
   `id` int(11) NOT NULL,
-  `nome` varchar(60) NOT NULL,
-  `sigla` varchar(5) NOT NULL
+  `name` varchar(60) NOT NULL,
+  `acronym` varchar(5) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Despejando dados para a tabela `uf`
+-- Despejando dados para a tabela `federative_unit`
 --
-
-INSERT INTO `uf` (`id`, `nome`, `sigla`) VALUES
-(1, 'Rondônia', 'RO'),
-(2, 'Acre', 'AC'),
-(3, 'Amazonas', 'AM'),
-(4, 'Roraima', 'RR'),
-(5, 'Pará', 'PA'),
-(6, 'Amapá', 'AP'),
-(7, 'Tocantins', 'TO'),
-(8, 'Maranhão', 'MA'),
-(9, 'Piauí', 'PI'),
-(10, 'Ceará', 'CE'),
-(11, 'Rio Grande do Norte', 'RN'),
-(12, 'Paraíba', 'PB'),
-(13, 'Pernambuco', 'PE'),
-(14, 'Alagoas', 'AL'),
-(15, 'Sergipe', 'SE'),
-(16, 'Bahia', 'BA'),
-(17, 'Minas Gerais', 'MG'),
-(18, 'Espírito Santo', 'ES'),
-(19, 'Rio de Janeiro', 'RJ'),
-(20, 'São Paulo', 'SP'),
-(21, 'Paraná', 'PR'),
-(22, 'Santa Catarina', 'SC'),
-(23, 'Rio Grande do Sul', 'RS'),
-(24, 'Mato Grosso do Sul', 'MS'),
-(25, 'Mato Grosso', 'MT'),
-(26, 'Goiás', 'GO'),
-(27, 'Distrito Federal', 'DF');
 
 --
 -- Índices para tabelas despejadas
 --
 
 --
--- Índices de tabela `agendamento`
+-- Índices de tabela `schedule`
 --
-ALTER TABLE `agendamento`
+ALTER TABLE `schedule`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `idx_agendamento__horario__servico_id` (`horario`,`servico_id`) USING BTREE,
-  ADD KEY `fk_agendamento__cliente_id` (`cliente_id`),
-  ADD KEY `fk_agendamento__servico_id` (`servico_id`);
+  ADD UNIQUE KEY `idx_schedule__time__task_id` (`time`,`task_id`) USING BTREE,
+  ADD KEY `fk_schedule__customer_id` (`customer_id`),
+  ADD KEY `fk_schedule__task_id` (`task_id`);
 
 --
--- Índices de tabela `bairro`
+-- Índices de tabela `neighborhood`
 --
-ALTER TABLE `bairro`
+ALTER TABLE `neighborhood`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `idx_bairro__cidade_id__nome` (`cidade_id`,`nome`) USING BTREE;
+  ADD UNIQUE KEY `idx_neighborhood__city_id__name` (`city_id`,`name`) USING BTREE;
 
 --
--- Índices de tabela `cidade`
+-- Índices de tabela `city`
 --
-ALTER TABLE `cidade`
+ALTER TABLE `city`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `idx_cidade__uf_id__nome` (`uf_id`,`nome`) USING BTREE;
+  ADD UNIQUE KEY `idx_city__federative_unit_id__name` (`federative_unit_id`,`name`) USING BTREE;
 
 --
--- Índices de tabela `cliente`
+-- Índices de tabela `customer`
 --
-ALTER TABLE `cliente`
+ALTER TABLE `customer`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `idx_cliente__nome` (`nome`) USING BTREE;
+  ADD UNIQUE KEY `idx_customer__name` (`name`) USING BTREE;
 
 --
--- Índices de tabela `funcionario`
+-- Índices de tabela `employee`
 --
-ALTER TABLE `funcionario`
+ALTER TABLE `employee`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `idx_funcionario__usuario` (`usuario`) USING BTREE,
-  ADD KEY `fk_funcionario__salao_id` (`salao_id`);
+  ADD UNIQUE KEY `idx_employee__user_name` (`user_name`) USING BTREE,
+  ADD KEY `fk_employee__beauty_salon_id` (`beauty_salon_id`);
 
 --
--- Índices de tabela `salao`
+-- Índices de tabela `beauty_salon`
 --
-ALTER TABLE `salao`
+ALTER TABLE `beauty_salon`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `idx_salao__logradouro__numero` (`logradouro`,`numero`) USING BTREE,
-  ADD KEY `fk_salao__bairro_id` (`bairro_id`);
+  ADD UNIQUE KEY `idx_beauty_salon__public_place__number` (`public_place`,`number`) USING BTREE,
+  ADD KEY `fk_beauty_salon__neighborhood_id` (`neighborhood_id`);
 
 --
--- Índices de tabela `servico`
+-- Índices de tabela `task`
 --
-ALTER TABLE `servico`
+ALTER TABLE `task`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `idx_servico__descricao__funcionario_id` (`descricao`,`funcionario_id`) USING BTREE,
-  ADD KEY `fk_servico__funcionario_id` (`funcionario_id`);
+  ADD UNIQUE KEY `idx_task__description__employee_id` (`description`,`employee_id`) USING BTREE,
+  ADD KEY `fk_task__employee_id` (`employee_id`);
 
 --
--- Índices de tabela `telefone`
+-- Índices de tabela `telephone`
 --
-ALTER TABLE `telefone`
+ALTER TABLE `telephone`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `idx_telefone__funcionario_id__ddd__numero` (`funcionario_id`,`ddd`,`numero`) USING BTREE;
+  ADD UNIQUE KEY `idx_telephone__employee_id__area_number__number` (`employee_id`,`area_number`,`number`) USING BTREE;
 
 --
--- Índices de tabela `uf`
+-- Índices de tabela `federative_unit`
 --
-ALTER TABLE `uf`
+ALTER TABLE `federative_unit`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `idx_uf__nome` (`nome`) USING BTREE,
-  ADD UNIQUE KEY `idx_uf__sigla` (`sigla`) USING BTREE;
+  ADD UNIQUE KEY `idx_federative_unit__name` (`name`) USING BTREE,
+  ADD UNIQUE KEY `idx_federative_unit__acronym` (`acronym`) USING BTREE;
 
 --
 -- AUTO_INCREMENT para tabelas despejadas
 --
 
 --
--- AUTO_INCREMENT de tabela `agendamento`
+-- AUTO_INCREMENT de tabela `schedule`
 --
-ALTER TABLE `agendamento`
+ALTER TABLE `schedule`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `bairro`
+-- AUTO_INCREMENT de tabela `neighborhood`
 --
-ALTER TABLE `bairro`
+ALTER TABLE `neighborhood`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `cidade`
+-- AUTO_INCREMENT de tabela `city`
 --
-ALTER TABLE `cidade`
+ALTER TABLE `city`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `cliente`
+-- AUTO_INCREMENT de tabela `customer`
 --
-ALTER TABLE `cliente`
+ALTER TABLE `customer`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `funcionario`
+-- AUTO_INCREMENT de tabela `employee`
 --
-ALTER TABLE `funcionario`
+ALTER TABLE `employee`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `salao`
+-- AUTO_INCREMENT de tabela `beauty_salon`
 --
-ALTER TABLE `salao`
+ALTER TABLE `beauty_salon`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `servico`
+-- AUTO_INCREMENT de tabela `task`
 --
-ALTER TABLE `servico`
+ALTER TABLE `task`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `telefone`
+-- AUTO_INCREMENT de tabela `telephone`
 --
-ALTER TABLE `telefone`
+ALTER TABLE `telephone`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `uf`
+-- AUTO_INCREMENT de tabela `federative_unit`
 --
-ALTER TABLE `uf`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+ALTER TABLE `federative_unit`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Restrições para tabelas despejadas
 --
 
 --
--- Restrições para tabelas `agendamento`
+-- Restrições para tabelas `schedule`
 --
-ALTER TABLE `agendamento`
-  ADD CONSTRAINT `fk_agendamento__cliente_id` FOREIGN KEY (`cliente_id`) REFERENCES `cliente` (`id`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_agendamento__servico_id` FOREIGN KEY (`servico_id`) REFERENCES `servico` (`id`) ON UPDATE CASCADE;
+ALTER TABLE `schedule`
+  ADD CONSTRAINT `fk_schedule__customer_id` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_schedule__task_id` FOREIGN KEY (`task_id`) REFERENCES `task` (`id`) ON UPDATE CASCADE;
 
 --
--- Restrições para tabelas `bairro`
+-- Restrições para tabelas `neighborhood`
 --
-ALTER TABLE `bairro`
-  ADD CONSTRAINT `fk_bairro__cidade_id` FOREIGN KEY (`cidade_id`) REFERENCES `cidade` (`id`) ON UPDATE CASCADE;
+ALTER TABLE `neighborhood`
+  ADD CONSTRAINT `fk_neighborhood__city_id` FOREIGN KEY (`city_id`) REFERENCES `city` (`id`) ON UPDATE CASCADE;
 
 --
--- Restrições para tabelas `cidade`
+-- Restrições para tabelas `city`
 --
-ALTER TABLE `cidade`
-  ADD CONSTRAINT `fk_cidade__uf_id` FOREIGN KEY (`uf_id`) REFERENCES `uf` (`id`) ON UPDATE CASCADE;
+ALTER TABLE `city`
+  ADD CONSTRAINT `fk_city__federative_unit_id` FOREIGN KEY (`federative_unit_id`) REFERENCES `federative_unit` (`id`) ON UPDATE CASCADE;
 
 --
--- Restrições para tabelas `funcionario`
+-- Restrições para tabelas `employee`
 --
-ALTER TABLE `funcionario`
-  ADD CONSTRAINT `fk_funcionario__salao_id` FOREIGN KEY (`salao_id`) REFERENCES `salao` (`id`) ON UPDATE CASCADE;
+ALTER TABLE `employee`
+  ADD CONSTRAINT `fk_employee__beauty_salon_id` FOREIGN KEY (`beauty_salon_id`) REFERENCES `beauty_salon` (`id`) ON UPDATE CASCADE;
 
 --
--- Restrições para tabelas `salao`
+-- Restrições para tabelas `beauty_salon`
 --
-ALTER TABLE `salao`
-  ADD CONSTRAINT `fk_salao__bairro_id` FOREIGN KEY (`bairro_id`) REFERENCES `bairro` (`id`) ON UPDATE CASCADE;
+ALTER TABLE `beauty_salon`
+  ADD CONSTRAINT `fk_beauty_salon__neighborhood_id` FOREIGN KEY (`neighborhood_id`) REFERENCES `neighborhood` (`id`) ON UPDATE CASCADE;
 
 --
--- Restrições para tabelas `servico`
+-- Restrições para tabelas `task`
 --
-ALTER TABLE `servico`
-  ADD CONSTRAINT `fk_servico__funcionario_id` FOREIGN KEY (`funcionario_id`) REFERENCES `funcionario` (`id`) ON UPDATE CASCADE;
+ALTER TABLE `task`
+  ADD CONSTRAINT `fk_task__employee_id` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`) ON UPDATE CASCADE;
 
 --
--- Restrições para tabelas `telefone`
+-- Restrições para tabelas `telephone`
 --
-ALTER TABLE `telefone`
-  ADD CONSTRAINT `fk_telefone__funcionario_id` FOREIGN KEY (`funcionario_id`) REFERENCES `funcionario` (`id`) ON UPDATE CASCADE;
+ALTER TABLE `telephone`
+  ADD CONSTRAINT `fk_telephone__employee_id` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`) ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+INSERT INTO `federative_unit` (`name`, `acronym`) VALUES
+('Rondônia', 'RO'),
+('Acre', 'AC'),
+('Amazonas', 'AM'),
+('Roraima', 'RR'),
+('Pará', 'PA'),
+('Amapá', 'AP'),
+('Tocantins', 'TO'),
+('Maranhão', 'MA'),
+('Piauí', 'PI'),
+('Ceará', 'CE'),
+('Rio Grande do Norte', 'RN'),
+('Paraíba', 'PB'),
+('Pernambuco', 'PE'),
+('Alagoas', 'AL'),
+('Sergipe', 'SE'),
+('Bahia', 'BA'),
+('Minas Gerais', 'MG'),
+('Espírito Santo', 'ES'),
+('Rio de Janeiro', 'RJ'),
+('São Paulo', 'SP'),
+('Paraná', 'PR'),
+('Santa Catarina', 'SC'),
+('Rio Grande do Sul', 'RS'),
+('Mato Grosso do Sul', 'MS'),
+('Mato Grosso', 'MT'),
+('Goiás', 'GO'),
+('Distrito Federal', 'DF');

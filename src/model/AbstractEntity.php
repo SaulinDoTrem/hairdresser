@@ -1,7 +1,6 @@
 <?php
 
     namespace Hairdresser\Model;
-    use Hairdresser\Model\Database;
 
     abstract class AbstractEntity {
         protected string $tableName;

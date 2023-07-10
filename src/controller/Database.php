@@ -1,6 +1,6 @@
 <?php
 
-    namespace Hairdresser\Model;
+    namespace Hairdresser\Controller;
     use PDOException;
     use PDO;
     use PDOStatement;

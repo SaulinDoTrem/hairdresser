@@ -5,36 +5,38 @@
 
     class City extends AbstractEntity {
         protected string $tableName = "city";
-        private int $federative_unit_id;
+        private FederativeUnit $federative_unit;
         private string $name;
 
-        public function getFederativeUnitId() {
-            return $this->federative_unit_id;
+        public function getFederativeUnit():FederativeUnit {
+            return $this->federative_unit;
         }
 
-        public function setFederativeUnitId($federative_unit_id) {
-            $this->federative_unit_id = $federative_unit_id;
+        public function setFederativeUnit(array $federative_unitData):void {
+            $federative_unit = new FederativeUnit();
+            $federative_unit->fromMap($federative_unitData);
+            $this->federative_unit = $federative_unit;
         }
 
-        public function getName() {
+        public function getName():string {
             return $this->name;
         }
 
-        public function setName($name) {
+        public function setName($name):void {
             $this->name = $name;
         }
 
         public function toMap():array {
             return [
                     "id"=> $this->getId(),
-                    "ferative_unit_id"=> $this->getFederativeUnitId(),
+                    "federative_unit"=> $this->getFederativeUnit()->toMap(),
                     "name" => $this->getName()
                 ];
         }
 
         public function fromMap(array $data):void {
             $this->setId($data["id"]);
-            $this->setFederativeUnitId($data["ferative_unit_id"]);
+            $this->setFederativeUnit($data["federative_unit"]);
             $this->setName($data["name"]);
         }
     }
