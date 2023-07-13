@@ -4,6 +4,7 @@
     use Hairdresser\Utils\Config;
 
     class BeautySalon extends AbstractEntity {
+        protected string $tableName = "beauty_salon";
         private Neighborhood $neighborhood;
         private string $name;
         private string $publicPlace;
@@ -31,6 +32,15 @@
         }
         public function setNumber(int $number):void {
             $this->number = $number;
+        }
+        public function getColumns():array {
+            return [
+                "id",
+                "neighborhood_id",
+                "name",
+                "public_place",
+                "number"
+            ];
         }
         public function toMap():array {
             return [

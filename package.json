@@ -1,0 +1,21 @@
+{
+    "name": "hairdresser",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "dev": "gulp"
+    },
+    "repository": {
+        "type": "git",
+        "url": "ssh://git@github.com:SaulinDoTrem/hairdresser.git"
+    },
+    "author": "Saulo Klein Nery",
+    "license": "ISC",
+    "devDependencies": {
+        "gulp": "^4.0.2",
+        "gulp-connect": "^5.7.0",
+        "gulp-sass": "^5.1.0",
+        "sass": "^1.56.1"
+    }
+}

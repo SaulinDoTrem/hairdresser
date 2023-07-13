@@ -3,6 +3,7 @@
     namespace Hairdresser\Model;
 
     class Person extends AbstractEntity {
+        protected string $tableName = "person";
         private string $name;
         private string $userName;
         private string $password;
@@ -23,6 +24,14 @@
         }
         public function setPassword(string $password):void {
             $this->password = $password;
+        }
+        public function getColumns():array {
+            return [
+                "id",
+                "name",
+                "user_name",
+                "password"
+            ];
         }
         public function toMap():array {
             return [

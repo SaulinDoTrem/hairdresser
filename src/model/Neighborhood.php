@@ -3,6 +3,7 @@
     namespace Hairdresser\Model;
 
     class Neighborhood extends AbstractEntity{
+        protected string $tableName = "neighborhood";
         private City $city;
         private string $name;
         public function getCity():City {
@@ -16,6 +17,13 @@
         }
         public function setName(string $name):void {
             $this->name = $name;
+        }
+        public function getColumns():array {
+            return [
+                "id",
+                "city_id",
+                "name"
+            ];
         }
         public function toMap():array {
             return [

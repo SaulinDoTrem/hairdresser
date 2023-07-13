@@ -3,6 +3,7 @@
     namespace Hairdresser\Model;
 
     class Task extends AbstractEntity {
+        protected string $tableName = "task";
         private Employee $employee;
         private int $estimatedMinutes;
         private string $description;
@@ -23,6 +24,14 @@
         }
         public function setDescription(string $description):void {
             $this->description = $description;
+        }
+        public function getColumns():array {
+            return [
+                "id",
+                "employee_id",
+                "estimated_minutes",
+                "description"
+            ];
         }
         public function toMap():array {
             return [

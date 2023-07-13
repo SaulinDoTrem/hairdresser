@@ -4,6 +4,7 @@
     use DateTime;
 
     class Employee extends AbstractEntity {
+        protected string $tableName = "employee";
         private Person $person;
         private BeautySalon $beautySalon;
         private string $name;
@@ -38,6 +39,16 @@
         }
         public function setEndOfficeRoutine(DateTime $endOfficeRoutine):void {
             $this->endOfficeRoutine = $endOfficeRoutine;
+        }
+        public function getColumns():array {
+            return [
+                "id",
+                "person_id",
+                "beauty_salon_id",
+                "name",
+                "begin_office_routine",
+                "end_office_routine"
+            ];
         }
         public function toMap():array {
             return [

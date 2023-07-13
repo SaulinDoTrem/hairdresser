@@ -5,6 +5,7 @@
 use DateTime;
 
     class Schedule extends AbstractEntity {
+        protected string $tableName = "schedule";
         private Person $person; //customer/cliente/freguês
         private Task $task;
         private DateTime $date;
@@ -25,6 +26,14 @@ use DateTime;
         }
         public function getDate():DateTime {
             return $this->date;
+        }
+        public function getColumns():array {
+            return [
+                "id",
+                "person_id",
+                "task_id",
+                "date"
+            ];
         }
         public function toMap():array {
             return [

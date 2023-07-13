@@ -1,7 +1,8 @@
 <?php
-
     namespace Hairdresser\Controller;
-    use PDOException;
+    use Dotenv\Dotenv;
+use Hairdresser\Model\AbstractEntity;
+use PDOException;
     use PDO;
     use PDOStatement;
 
@@ -16,12 +17,15 @@
 
         public function setConnection():void {
             try {
-                $configJson = json_decode(file_get_contents("../../config.json"), true);
+                $dotenv = Dotenv::createImmutable(__DIR__."/../..");
+                $dotenv->load();
 
-                $host = $configJson["host"];
-                $dbname = $configJson["dbname"];
-                $user = $configJson["user"];
-                $password = $configJson["password"];
+                $inputDotEnv = 'DATABASE_';
+
+                $host = $_ENV["{$inputDotEnv}HOST"];
+                $dbname = $_ENV["{$inputDotEnv}NAME"];
+                $user = $_ENV["{$inputDotEnv}USER"];
+                $password = $_ENV["{$inputDotEnv}PASSWORD"];
 
                 $dsn = "mysql:host=" . $host . ";dbname=" . $dbname . ";charset=utf8";
                 $this->connection = new PDO($dsn, $user, $password, [PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);
@@ -34,7 +38,7 @@
             return $this->connection;
         }
 
-        public function execute(string $query, string $errorMessage, array $params=[]):PDOStatement {
+        public function execute(string $query, string $errorMessage, array $params):PDOStatement {
             try{
                 $stmt = $this->connection->prepare($query);
                 $stmt->execute($params);
@@ -44,9 +48,12 @@
             }
         }
 
-        public function insert(array $tableData):int {
+        public function insert(AbstractEntity $entity):int {
+            $tableData = $entity->toMap();
             if(empty($tableData))
                 die("Dados não foram recebidos com sucesso.");
+
+            unset($tableData["id"]);
 
             $fields = implode(", ", array_keys($tableData));
             $binds = implode(", ", array_pad([], count(array_keys($tableData)), "?"));
@@ -58,9 +65,13 @@
             return $this->connection->lastInsertId();
         }
 
-        public function update(int $id, array $tableData):int {
+        public function update(AbstractEntity $entity):int {
+            $tableData = $entity->toMap();
+            $id = $entity->getId();
             if(empty($id) || empty($tableData))
                 die("O Id ou os dados não foram recebidos com sucesso.");
+
+            unset($tableData["id"]);
 
             $columns = count($tableData) > 1 ? implode(" = ?, ", array_keys($tableData)) : array_keys($tableData)[0] . " = ?";
 
@@ -81,13 +92,13 @@
             return $this->execute($query, "Erro ao deletar id {$id} da tabela {$this->tableName}.", [$id])->rowCount();
         }
 
-        public function select(array $columnNames, string $where = null, string $orderBy = null, string $limit = null):array {
+        public function select(array $columnNames, string $where = null, array $params=[], string $orderBy = null, string $limit = null):array {
             if(empty($columnNames))
                 die("Dados não foram recebidos com sucesso.");
 
             $select = implode(", ", $columnNames);
             function buildQueryText($text, $prefix) {
-                return $text ? $prefix . " " . $text . " " : "";
+                return !empty($text) ? $prefix . " " . $text . " " : "";
             };
 
             $where = buildQueryText($where,"WHERE");
@@ -97,7 +108,7 @@
             $query = "SELECT " . $select . " FROM {$this->tableName} " . $where . $orderBy . $limit .";";
 
 
-            return $this->execute($query, "Erro ao tentar fazer leitura da tabela {$this->tableName}.")->fetchAll(PDO::FETCH_ASSOC);
+            return $this->execute($query, "Erro ao tentar fazer leitura da tabela {$this->tableName}.", $params)->fetchAll(PDO::FETCH_ASSOC);
         }
     }
 

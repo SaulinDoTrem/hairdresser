@@ -3,6 +3,7 @@
     namespace Hairdresser\Model;
 
     class FederativeUnit extends AbstractEntity{
+        protected string $tableName = "federative_unit";
         private string $name;
         private string $acronym;
         public function getName():string {
@@ -16,6 +17,13 @@
         }
         public function setAcronym(string $acronym):void {
             $this->acronym = $acronym;
+        }
+        public function getColumns():array {
+            return [
+                "id",
+                "name",
+                "acronym"
+            ];
         }
         public function toMap():array {
             return [

@@ -4,5 +4,9 @@
         "psr-4": {
             "Hairdresser\\": "src/"
         }
+    },
+    "require": {
+        "firebase/php-jwt": "*",
+        "vlucas/phpdotenv": "*"
     }
 }

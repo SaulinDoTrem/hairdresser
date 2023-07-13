@@ -3,6 +3,7 @@
     namespace Hairdresser\Model;
 
     class Telephone extends AbstractEntity {
+        protected string $tableName = "telephone";
         private Person $person;
         private int $areaNumber;
         private int $number;
@@ -23,6 +24,14 @@
         }
         public function setNumber(int $number):void {
             $this->number = $number;
+        }
+        public function getColumns():array {
+            return [
+                "id",
+                "person_id",
+                "area_number",
+                "number"
+            ];
         }
         public function toMap():array {
             return [
