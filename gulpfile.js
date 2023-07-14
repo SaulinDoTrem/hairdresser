@@ -1,52 +1,75 @@
 const { src, dest, watch, parallel } = require("gulp");
 const sass = require("gulp-sass")(require("sass"));
+const browserify = require("browserify");
+const source = require("vinyl-source-stream");
+const uglify = require("gulp-uglify");
+const buffer = require("vinyl-buffer");
 const connect = require("gulp-connect");
-
-const rootPath = "src/view";
+const imagemin = require("gulp-imagemin");
 
 const paths = {
     html: {
-        root: rootPath + "/templates/",
-        all: rootPath + "/templates/**/*.html",
+        all: "src/view/templates/**/*.html",
+    },
+    images: {
+        all: "src/view/assets/**/*",
     },
     styles: {
-        all: rootPath + "/styles/sass/**/*.scss",
-        main: rootPath + "/styles/sass/main.scss",
+        all: "src/view/styles/**/*.scss",
+        main: "src/view/styles/main.scss",
     },
     scripts: {
-        all: rootPath + "/scripts/**/*.js",
-        main: rootPath + "src/scripts/index.js",
+        all: "src/view/scripts/**/*.js",
+        main: "src/view/scripts/index.js",
     },
-    output: rootPath + "/styles/css",
+    output: {
+        files: "docs",
+        images: "docs/assets",
+    },
 };
 
 function server() {
     connect.server({
-        root: paths.html.root,
+        root: paths.output.files,
         livereload: true,
-        port: 3030,
+        port: 3000,
     });
+}
+
+function html() {
+    return src(paths.html.all).pipe(dest(paths.output.files)).pipe(connect.reload());
+}
+
+function images() {
+    return src(paths.images.all)
+        .pipe(imagemin())
+        .pipe(dest(paths.output.images))
+        .pipe(connect.reload());
 }
 
 function styles() {
     return src(paths.styles.main)
         .pipe(sass({ outputStyle: "compressed" }).on("error", sass.logError))
-        .pipe(dest(paths.output))
+        .pipe(dest(paths.output.files))
         .pipe(connect.reload());
 }
 
-function html() {
-    return src(paths.html.all).pipe(connect.reload());
-}
-
 function scripts() {
-    return src(paths.scripts.all).pipe(connect.reload());
+    return browserify(paths.scripts.main)
+        .transform("babelify", { presets: ["@babel/preset-env"] })
+        .bundle()
+        .pipe(source("bundle.js"))
+        .pipe(buffer())
+        .pipe(uglify())
+        .pipe(dest(paths.output.files))
+        .pipe(connect.reload());
 }
 
 function sentinel() {
     watch(paths.html.all, { ignoreInitial: false }, html);
     watch(paths.styles.all, { ignoreInitial: false }, styles);
     watch(paths.scripts.all, { ignoreInitial: false }, scripts);
+    watch(paths.images.all, { ignoreInitial: false }, images);
 }
 
 exports.default = parallel(server, sentinel);

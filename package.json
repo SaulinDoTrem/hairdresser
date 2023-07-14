@@ -13,9 +13,18 @@
     "author": "Saulo Klein Nery",
     "license": "ISC",
     "devDependencies": {
+        "@babel/core": "^7.20.2",
+        "@babel/preset-env": "^7.20.2",
+        "babelify": "^10.0.0",
+        "browserify": "^17.0.0",
         "gulp": "^4.0.2",
+        "gulp-cli": "^2.3.0",
         "gulp-connect": "^5.7.0",
+        "gulp-imagemin": "^7.1.0",
         "gulp-sass": "^5.1.0",
-        "sass": "^1.56.1"
+        "gulp-uglify": "^3.0.2",
+        "sass": "^1.56.1",
+        "vinyl-buffer": "^1.0.1",
+        "vinyl-source-stream": "^2.0.0"
     }
 }
