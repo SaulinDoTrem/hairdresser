@@ -6,7 +6,18 @@
         <script src="./bundle.js" defer></script>
     </head>
     <body>
-        qualquer coisa que tem que ficar em cima do header
-        <main>conteudo do main</main>
+        <main>
+            <form class="login-form">
+                <div class="login-form__group">
+                    <label for="userName">Nome de usuário:</label>
+                    <input type="text" name="userName" id="userName" />
+                </div>
+                <div class="login-form__group">
+                    <label for="password">Senha:</label>
+                    <input type="password" name="password" id="password" />
+                </div>
+                <button class="login-form__submit" type="submit">Logar</button>
+            </form>
+        </main>
     </body>
 </html>
