@@ -1,8 +1,8 @@
 <?php
     namespace Hairdresser\Controller;
-    use Dotenv\Dotenv;
-use Hairdresser\Model\AbstractEntity;
-use PDOException;
+    use Hairdresser\Model\AbstractEntity;
+    use Hairdresser\Utils\Config;
+    use PDOException;
     use PDO;
     use PDOStatement;
 
@@ -16,21 +16,20 @@ use PDOException;
         }
 
         public function setConnection():void {
+
+            Config::startDotEnv();
+            $inputDotEnv = 'DATABASE_';
+
+            $host = $_ENV["{$inputDotEnv}HOST"];
+            $dbname = $_ENV["{$inputDotEnv}NAME"];
+            $user = $_ENV["{$inputDotEnv}USER"];
+            $password = $_ENV["{$inputDotEnv}PASSWORD"];
+
             try {
-                $dotenv = Dotenv::createImmutable(__DIR__."/../..");
-                $dotenv->load();
-
-                $inputDotEnv = 'DATABASE_';
-
-                $host = $_ENV["{$inputDotEnv}HOST"];
-                $dbname = $_ENV["{$inputDotEnv}NAME"];
-                $user = $_ENV["{$inputDotEnv}USER"];
-                $password = $_ENV["{$inputDotEnv}PASSWORD"];
-
                 $dsn = "mysql:host=" . $host . ";dbname=" . $dbname . ";charset=utf8";
                 $this->connection = new PDO($dsn, $user, $password, [PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);
             } catch(PDOException $e) {
-                die("Erro ao conectar com o banco de dados. {$e->getMessage()}");
+                Config::httpRequest("Erro ao conectar com o banco de dados. {$e->getMessage()}", 500);
             }
         }
 
@@ -44,14 +43,14 @@ use PDOException;
                 $stmt->execute($params);
                 return $stmt;
             }catch(PDOException $e) {
-                die($errorMessage . " {$e->getMessage()}");
+                Config::httpRequest($errorMessage . " {$e->getMessage()}", 500);
             }
         }
 
         public function insert(AbstractEntity $entity):int {
             $tableData = $entity->toMap();
             if(empty($tableData))
-                die("Dados não foram recebidos com sucesso.");
+                Config::httpRequest("Os dados não foram recebidos com sucesso.", 400);
 
             unset($tableData["id"]);
 
@@ -69,7 +68,7 @@ use PDOException;
             $tableData = $entity->toMap();
             $id = $entity->getId();
             if(empty($id) || empty($tableData))
-                die("O Id ou os dados não foram recebidos com sucesso.");
+                Config::httpRequest("Alguns dados não foram recebidos com sucesso.", 400);
 
             unset($tableData["id"]);
 
@@ -85,27 +84,17 @@ use PDOException;
 
         public function delete(int $id):int {
             if(empty($id))
-                die("Id vazio ou nulo.");
+                Config::httpRequest("Id vazio ou nulo.", 400);
 
             $query = "DELETE FROM {$this->tableName} WHERE id = ?";
 
             return $this->execute($query, "Erro ao deletar id {$id} da tabela {$this->tableName}.", [$id])->rowCount();
         }
 
-        public function select(array $columnNames, string $where = null, array $params=[], string $orderBy = null, string $limit = null):array {
-            if(empty($columnNames))
-                die("Dados não foram recebidos com sucesso.");
+        public function select(array $columnNames = [], string $where = null, array $params=[]):array {
+            $select = !empty($columnNames) ? implode(", ", $columnNames) : "*";
 
-            $select = implode(", ", $columnNames);
-            function buildQueryText($text, $prefix) {
-                return !empty($text) ? $prefix . " " . $text . " " : "";
-            };
-
-            $where = buildQueryText($where,"WHERE");
-            $orderBy = buildQueryText($orderBy,"ORDER BY");
-            $limit = buildQueryText($limit,"LIMIT");
-
-            $query = "SELECT " . $select . " FROM {$this->tableName} " . $where . $orderBy . $limit .";";
+            $query = "SELECT " . $select . " FROM {$this->tableName} " . $where . ";";
 
 
             return $this->execute($query, "Erro ao tentar fazer leitura da tabela {$this->tableName}.", $params)->fetchAll(PDO::FETCH_ASSOC);

@@ -23,8 +23,8 @@ const paths = {
         main: "src/view/scripts/index.js",
     },
     output: {
-        files: "docs",
-        images: "docs/assets",
+        files: "dist",
+        images: "dist/assets",
     },
 };
 

@@ -31,14 +31,24 @@ const buildHtmlBody = (fileText, fileName) => {
     switch (fileName) {
         case "footer":
             {
-                const [beforeMain, afterMain] = document.body.innerHTML.split("</main>");
-                document.body.innerHTML = `${beforeMain}</main>${element.outerHTML}${afterMain}`;
+                const children = document.body.children;
+                const newChildren = [];
+                for (let i = 0; i < children.length; i++) {
+                    newChildren.push(children.item(i));
+                    if (children.item(i).tagName === "MAIN") newChildren.push(element);
+                }
+                document.body.replaceChildren(...newChildren);
             }
             break;
         case "header":
             {
-                const [beforeMain, afterMain] = document.body.innerHTML.split("<main>");
-                document.body.innerHTML = `${beforeMain}${element.outerHTML}<main>${afterMain}`;
+                const children = document.body.children;
+                const newChildren = [];
+                for (let i = 0; i < children.length; i++) {
+                    if (children.item(i).tagName === "MAIN") newChildren.push(element);
+                    newChildren.push(children.item(i));
+                }
+                document.body.replaceChildren(...newChildren);
             }
             break;
         default: {
