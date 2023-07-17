@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script src="./bundle.js" defer></script>
+    </head>
+    <body>
+        <main>
+            <form class="login-form" id="login-form">
+                <div class="login-form__group">
+                    <label for="userName">Nome de usuário:</label>
+                    <input type="text" autocomplete="username" name="userName" id="userName" />
+                </div>
+                <div class="login-form__group">
+                    <label for="password">Senha:</label>
+                    <input
+                        type="password"
+                        autocomplete="current-password"
+                        name="password"
+                        id="password"
+                    />
+                </div>
+                <div class="login-form__group">
+                    <button class="login-form__submit" type="submit">Entrar</button>
+                    <button class="login-form__sign-up" type="button">Criar conta</button>
+                </div>
+            </form>
+        </main>
+    </body>
+</html>
