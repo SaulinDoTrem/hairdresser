@@ -9,18 +9,18 @@ const imagemin = require("gulp-imagemin");
 
 const paths = {
     html: {
-        all: "src/view/templates/**/*.html",
+        all: "views/templates/**/*.html",
     },
     images: {
-        all: "src/view/assets/**/*",
+        all: "views/assets/**/*",
     },
     styles: {
-        all: "src/view/styles/**/*.scss",
-        main: "src/view/styles/main.scss",
+        all: "views/styles/**/*.scss",
+        main: "views/styles/main.scss",
     },
     scripts: {
-        all: "src/view/scripts/**/*.js",
-        main: "src/view/scripts/index.js",
+        all: "views/scripts/**/*.js",
+        main: "views/scripts/index.js",
     },
     output: {
         files: "dist",

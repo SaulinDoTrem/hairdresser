@@ -2,7 +2,7 @@
     "name": "hairdresser/src",
     "autoload": {
         "psr-4": {
-            "Hairdresser\\": "src/"
+            "app\\": "./"
         }
     },
     "require": {
