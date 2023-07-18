@@ -1,20 +1,18 @@
 <?php
     require __DIR__.'/../vendor/autoload.php';
+    use app\controllers\testaController;
 
     use app\core\Application;
 
+    $app = new Application(dirname(__DIR__));
 
-    $app = new Application();
+    $routes = [
+        testaController::class
+    ];
 
-    $app->router->get('/', function() {
-        return "hello world";
-    });
-
-    $app->router->get('/users', function(){
-        return "users";
-    });
-
+    foreach($routes as $route) {
+        $app->getRouter()->registerRoute($route);
+    }
 
     $app->run();
-    //var_dump($_SERVER);
 ?>

@@ -3,7 +3,7 @@
     namespace Hairdresser\Model;
     use Hairdresser\Utils\Config;
 
-    class BeautySalon extends AbstractEntity {
+    class BeautySalon extends AbstractModel {
         protected string $tableName = "beauty_salon";
         private Neighborhood $neighborhood;
         private string $name;

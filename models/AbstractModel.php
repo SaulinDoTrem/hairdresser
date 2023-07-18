@@ -2,7 +2,7 @@
 
     namespace Hairdresser\Model;
 
-    abstract class AbstractEntity {
+    abstract class AbstractModel {
         protected string $tableName;
         protected int $id;
         abstract function fromMap(array $data):void;

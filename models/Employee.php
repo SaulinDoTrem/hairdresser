@@ -3,7 +3,7 @@
     namespace Hairdresser\Model;
     use DateTime;
 
-    class Employee extends AbstractEntity {
+    class Employee extends AbstractModel {
         protected string $tableName = "employee";
         private Person $person;
         private BeautySalon $beautySalon;

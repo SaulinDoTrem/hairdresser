@@ -4,7 +4,7 @@
 
 use DateTime;
 
-    class Schedule extends AbstractEntity {
+    class Schedule extends AbstractModel {
         protected string $tableName = "schedule";
         private Person $person; //customer/cliente/freguês
         private Task $task;

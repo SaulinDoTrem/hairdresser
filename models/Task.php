@@ -2,7 +2,7 @@
 
     namespace Hairdresser\Model;
 
-    class Task extends AbstractEntity {
+    class Task extends AbstractModel {
         protected string $tableName = "task";
         private Employee $employee;
         private int $estimatedMinutes;

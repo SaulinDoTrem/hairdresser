@@ -2,7 +2,7 @@
 
     namespace Hairdresser\Model;
 
-    class Neighborhood extends AbstractEntity{
+    class Neighborhood extends AbstractModel{
         protected string $tableName = "neighborhood";
         private City $city;
         private string $name;

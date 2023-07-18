@@ -2,7 +2,7 @@
 
     namespace Hairdresser\Model;
 
-    class Person extends AbstractEntity {
+    class Person extends AbstractModel {
         protected string $tableName = "person";
         private string $name;
         private string $userName;
