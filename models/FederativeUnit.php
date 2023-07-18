@@ -1,7 +1,6 @@
 <?php
 
-    namespace Hairdresser\Model;
-
+    namespace app\models;
     class FederativeUnit extends AbstractModel{
         protected string $tableName = "federative_unit";
         private string $name;

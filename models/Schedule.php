@@ -1,9 +1,8 @@
 <?php
 
-    namespace Hairdresser\Model;
-
-use DateTime;
-
+    namespace app\models;
+    use app\models\Task;
+    use DateTime;
     class Schedule extends AbstractModel {
         protected string $tableName = "schedule";
         private Person $person; //customer/cliente/freguês

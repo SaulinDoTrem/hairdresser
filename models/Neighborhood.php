@@ -1,7 +1,6 @@
 <?php
 
-    namespace Hairdresser\Model;
-
+    namespace app\models;
     class Neighborhood extends AbstractModel{
         protected string $tableName = "neighborhood";
         private City $city;

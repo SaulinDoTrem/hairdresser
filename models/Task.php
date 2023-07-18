@@ -1,22 +1,28 @@
 <?php
 
-    namespace Hairdresser\Model;
-
+    namespace app\models;
     class Task extends AbstractModel {
         protected string $tableName = "task";
         private Employee $employee;
-        private int $estimatedMinutes;
+        private string $estimatedMinutes;
         private string $description;
+        private $price;
+        public function getPrice() {
+            return $this->price;
+        }
+        public function setPrice($price) {
+            $this->price = $price;
+        }
         public function getEmployee():Employee {
             return $this->employee;
         }
         public function setEmployee(Employee $employee):void {
             $this->employee = $employee;
         }
-        public function getEstimatedMinutes():int {
+        public function getEstimatedMinutes():string {
             return $this->estimatedMinutes;
         }
-        public function setEstimatedMinutes(int $estimatedMinutes):void {
+        public function setEstimatedMinutes(string $estimatedMinutes):void {
             $this->estimatedMinutes = $estimatedMinutes;
         }
         public function getDescription():string {
@@ -30,7 +36,8 @@
                 "id",
                 "employee_id",
                 "estimated_minutes",
-                "description"
+                "description",
+                "price"
             ];
         }
         public function toMap():array {
@@ -38,7 +45,8 @@
                 "id"=> $this->getId(),
                 "employee"=> $this->getEmployee()->toMap(),
                 "estimated_minutes"=> $this->getEstimatedMinutes(),
-                "description"=> $this->getDescription()
+                "description"=> $this->getDescription(),
+                "price"=> $this->getPrice()
             ];
         }
         public function fromMap(array $data):void {
@@ -49,6 +57,7 @@
             $this->setEmployee($employee);
             $this->setEstimatedMinutes($data["estimated_minutes"]);
             $this->setDescription($data["description"]);
+            $this->setPrice($data["price"]);
         }
     }
 ?>

@@ -16,7 +16,8 @@
             $this->router = new Router($this->request, $this->response);
         }
         public function run():void {
-            $this->router->resolve();
+            ["code"=> $code, "message"=> $message, "data"=> $responseData] = $this->router->resolve();
+            $this->response->sendResponse($code, $message, $responseData);
         }
         public function getRouter():Router {
             return $this->router;

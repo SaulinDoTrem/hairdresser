@@ -1,7 +1,6 @@
 <?php
 
-    namespace Hairdresser\Model;
-
+    namespace app\models;
     class Telephone extends AbstractModel {
         protected string $tableName = "telephone";
         private Person $person;

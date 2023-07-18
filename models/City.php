@@ -1,6 +1,7 @@
 <?php
 
-    namespace Hairdresser\Model;
+    namespace app\models;
+    use app\models\FederativeUnit;
 
     class City extends AbstractModel {
         protected string $tableName = "city";

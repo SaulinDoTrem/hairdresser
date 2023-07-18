@@ -1,6 +1,6 @@
 <?php
 
-    namespace Hairdresser\Model;
+    namespace app\models;
 
     abstract class AbstractModel {
         protected string $tableName;

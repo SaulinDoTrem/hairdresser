@@ -22,23 +22,23 @@
         public function setRequest(Request $request):void {
             $this->request = $request;
         }
-        public function registerRoute($classNamespace) {
+        public function registerRoute($classNamespace):void {
             $reflector = new ReflectionClass($classNamespace);
             $classInstance = $reflector->newInstance();
 
             $this->routes[$classInstance->getPath()] = $classInstance;
         }
-        public function resolve():void {
+        public function resolve():array {
             $path = $this->request->getPath();
             $method = $this->request->getMethod();
 
+            if(empty($this->routes[$path]))
+                return ["code"=> 404, "message"=> "No existing path.", "data"=> null];
             $classInstance = $this->routes[$path];
 
             $requestData = $this->request->getData();
 
-            ["code"=>$code, "message"=>$message, "data"=>$responseData] = $classInstance->{$method}($requestData);
-
-            $this->response->sendResponse($code, $message, $responseData);
+            return $classInstance->{$method}($requestData);
         }
     }
 ?>

@@ -1,6 +1,7 @@
 <?php
 
-    namespace Hairdresser\Model;
+    namespace app\models;
+    use app\models\Person;
     use DateTime;
 
     class Employee extends AbstractModel {
@@ -8,8 +9,8 @@
         private Person $person;
         private BeautySalon $beautySalon;
         private string $name;
-        private DateTime $beginOfficeRoutine;
-        private DateTime $endOfficeRoutine;
+        private string $beginOfficeRoutine;
+        private string $endOfficeRoutine;
         public function getPerson():Person {
             return $this->person;
         }
@@ -28,16 +29,16 @@
         public function setBeautySalon(BeautySalon $beautySalon):void {
             $this->beautySalon = $beautySalon;
         }
-        public function getBeginOfficeRoutine():DateTime {
+        public function getBeginOfficeRoutine():string {
             return $this->beginOfficeRoutine;
         }
-        public function setBeginOfficeRoutine(DateTime $beginOfficeRoutine):void {
+        public function setBeginOfficeRoutine(string $beginOfficeRoutine):void {
             $this->beginOfficeRoutine = $beginOfficeRoutine;
         }
-        public function getEndOfficeRoutine():DateTime {
+        public function getEndOfficeRoutine():string {
             return $this->endOfficeRoutine;
         }
-        public function setEndOfficeRoutine(DateTime $endOfficeRoutine):void {
+        public function setEndOfficeRoutine(string $endOfficeRoutine):void {
             $this->endOfficeRoutine = $endOfficeRoutine;
         }
         public function getColumns():array {

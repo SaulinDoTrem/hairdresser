@@ -1,7 +1,7 @@
 <?php
 
-    namespace Hairdresser\Model;
-    use Hairdresser\Utils\Config;
+    namespace app\models;
+    use app\models\Neighborhood;
 
     class BeautySalon extends AbstractModel {
         protected string $tableName = "beauty_salon";

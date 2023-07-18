@@ -16,7 +16,11 @@
 
         protected function getURIArguments():array {
             $requestData = [];
-            $arguments = explode("?", $_SERVER["REQUEST_URI"])[1];
+            $arguments = explode("?", $_SERVER["REQUEST_URI"])[1] ?? "";
+
+            if($arguments === "")
+                return $requestData;
+
             $arguments = explode("&", $arguments);
             foreach($arguments as $argument) {
                 [$key, $value] = explode("=",$argument);
