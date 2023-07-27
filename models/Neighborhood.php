@@ -17,13 +17,6 @@
         public function setName(string $name):void {
             $this->name = $name;
         }
-        public function getColumns():array {
-            return [
-                "id",
-                "city_id",
-                "name"
-            ];
-        }
         public function toMap():array {
             return [
                 "id"=> $this->getId(),

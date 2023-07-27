@@ -26,14 +26,6 @@
         public function getDate():DateTime {
             return $this->date;
         }
-        public function getColumns():array {
-            return [
-                "id",
-                "person_id",
-                "task_id",
-                "date"
-            ];
-        }
         public function toMap():array {
             return [
                 "id"=> $this->getId(),

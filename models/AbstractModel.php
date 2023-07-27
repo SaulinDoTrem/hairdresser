@@ -7,7 +7,6 @@
         protected int $id;
         abstract function fromMap(array $data):void;
         abstract function toMap():array;
-        abstract function getColumns():array;
         public function getTableName():string {
             return $this->tableName;
         }

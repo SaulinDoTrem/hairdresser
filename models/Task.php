@@ -31,15 +31,6 @@
         public function setDescription(string $description):void {
             $this->description = $description;
         }
-        public function getColumns():array {
-            return [
-                "id",
-                "employee_id",
-                "estimated_minutes",
-                "description",
-                "price"
-            ];
-        }
         public function toMap():array {
             return [
                 "id"=> $this->getId(),

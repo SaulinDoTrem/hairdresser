@@ -17,13 +17,6 @@
         public function setAcronym(string $acronym):void {
             $this->acronym = $acronym;
         }
-        public function getColumns():array {
-            return [
-                "id",
-                "name",
-                "acronym"
-            ];
-        }
         public function toMap():array {
             return [
                 "id"=> $this->getId(),

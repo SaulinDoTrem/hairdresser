@@ -41,16 +41,6 @@
         public function setEndOfficeRoutine(string $endOfficeRoutine):void {
             $this->endOfficeRoutine = $endOfficeRoutine;
         }
-        public function getColumns():array {
-            return [
-                "id",
-                "person_id",
-                "beauty_salon_id",
-                "name",
-                "begin_office_routine",
-                "end_office_routine"
-            ];
-        }
         public function toMap():array {
             return [
                 "id"=> $this->getId(),

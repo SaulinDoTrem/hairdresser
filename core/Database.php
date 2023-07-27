@@ -157,7 +157,8 @@
                         $previousModelKey = $modelKey;
                     }
                 }
-                $queryResults[$i] = $modelJson;
+                $model->fromMap($modelJson[$model->getTableName()]);
+                $queryResults[$i] = $model->toMap();
             }
 
             if($id === null) return $queryResults;

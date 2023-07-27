@@ -24,14 +24,6 @@
         public function setNumber(int $number):void {
             $this->number = $number;
         }
-        public function getColumns():array {
-            return [
-                "id",
-                "person_id",
-                "area_number",
-                "number"
-            ];
-        }
         public function toMap():array {
             return [
                 "id"=> $this->getId(),

@@ -33,15 +33,6 @@
         public function setNumber(int $number):void {
             $this->number = $number;
         }
-        public function getColumns():array {
-            return [
-                "id",
-                "neighborhood_id",
-                "name",
-                "public_place",
-                "number"
-            ];
-        }
         public function toMap():array {
             return [
                 "id"=> $this->getId(),
