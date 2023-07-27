@@ -23,8 +23,11 @@
 
             $arguments = explode("&", $arguments);
             foreach($arguments as $argument) {
-                [$key, $value] = explode("=",$argument);
-                $requestData[$key] = $value;
+                $explodeArray = explode("=",$argument);
+                if(count($explodeArray)>1){
+                    [$key, $value] = explode("=",$argument);
+                    $requestData[$key] = $value;
+                }
             }
 
             return $requestData;

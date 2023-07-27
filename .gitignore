@@ -7,6 +7,4 @@ node_modules
 .vscode
 dist
 teste.sql
-Config.php
-core/Database.php
 controllers/login.php

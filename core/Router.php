@@ -24,21 +24,36 @@
         }
         public function registerRoute($classNamespace):void {
             $reflector = new ReflectionClass($classNamespace);
-            $classInstance = $reflector->newInstance();
+            $methods = $reflector->getMethods();
+            $path = $reflector->getConstant("PATH");
 
-            $this->routes[$classInstance->getPath()] = $classInstance;
+            foreach($methods as $method) {
+                $name = $method->getName();
+                if(in_array($name, ['get','post','put','delete', 'options', 'patch']))
+                    $this->routes[$path][$name] = $classNamespace;
+            }
         }
-        public function resolve():array {
+        public function resolve():void {
             $path = $this->request->getPath();
             $method = $this->request->getMethod();
 
-            if(empty($this->routes[$path]))
-                return ["code"=> 404, "message"=> "No existing path.", "data"=> null];
-            $classInstance = $this->routes[$path];
+            if(empty($this->routes[$path])) {
+                $this->response->sendResponse(404, "No existing path.");
+                return;
+            }
+            if(empty($this->routes[$path][$method])) {
+                $method = strtoupper($method);
+                $this->response->sendResponse(404, "There's no method $method for this path.");
+                return;
+            }
+            $reflector = new ReflectionClass($this->routes[$path][$method]);
+            $classInstance = $reflector->newInstance();
 
             $requestData = $this->request->getData();
 
-            return $classInstance->{$method}($requestData);
+            ["code"=> $code, "message"=> $message, "data"=> $responseBody] = $classInstance->{$method}($requestData);
+
+            $this->response->sendResponse($code, $message, $responseBody);
         }
     }
 ?>
