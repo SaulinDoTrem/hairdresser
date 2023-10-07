@@ -8,5 +8,15 @@
     "require": {
         "firebase/php-jwt": "*",
         "vlucas/phpdotenv": "*"
+    },
+    "require-dev": {
+        "kahlan/kahlan": "^5.2",
+        "phpstan/phpstan": "^1.10",
+        "robmorgan/phinx": "^0.15.2"
+    },
+    "scripts": {
+        "test": "kahlan",
+        "cover": "phpstan coverage--level=4",
+        "fenix": "phinx"
     }
 }

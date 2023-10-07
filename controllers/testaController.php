@@ -3,8 +3,8 @@
     use app\core\Request;
     use app\models\BeautySalon;
     use app\models\FederativeUnit;
-use app\models\Neighborhood;
-use app\models\Person;
+    use app\models\Neighborhood;
+    use app\models\Person;
 
     class testaController extends AbstractController{
         const PATH = "/testa";
