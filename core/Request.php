@@ -4,10 +4,10 @@
 
     class Request {
         public function getPath():string {
-            return $_SERVER["PATH_INFO"] ?? '/';
+            return strtolower($_SERVER["REQUEST_URI"]) ?? '/';
         }
         public function getMethod():string {
-            return strtolower($_SERVER["REQUEST_METHOD"]);
+            return strtoupper($_SERVER["REQUEST_METHOD"]);
         }
         protected function getBody():array {
             $inputJson = file_get_contents("php://input");
@@ -45,4 +45,3 @@
             return [];
         }
     }
-?>

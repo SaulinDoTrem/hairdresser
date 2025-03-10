@@ -17,6 +17,7 @@
     "scripts": {
         "test": "kahlan",
         "cover": "phpstan coverage--level=4",
-        "fenix": "phinx"
+        "fenix": "phinx",
+        "server": "php -S localhost:8080 public/index.php"
     }
 }

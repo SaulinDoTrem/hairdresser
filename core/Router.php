@@ -2,58 +2,65 @@
 
     namespace app\core;
     use app\controllers\testaController;
+    use Exception;
     use ReflectionClass;
     use Reflector;
 
     class Router{
-        private Request $request;
-        private Response $response;
+        /**
+         * @var Route[]
+         */
         protected array $routes = [];
-        public function __construct(Request $request, Response $response) {
-            $this->setRequest($request);
-            $this->setResponse($response);
-        }
-        public function setResponse(Response $response):void {
-            $this->response = $response;
-        }
-        public function getRequest(): Request {
-            return $this->request;
-        }
-        public function setRequest(Request $request):void {
-            $this->request = $request;
-        }
-        public function registerRoute($classNamespace):void {
-            $reflector = new ReflectionClass($classNamespace);
-            $methods = $reflector->getMethods();
-            $path = $reflector->getConstant("PATH");
 
-            foreach($methods as $method) {
-                $name = $method->getName();
-                if(in_array($name, ['get','post','put','delete', 'options', 'patch']))
-                    $this->routes[$path][$name] = $classNamespace;
+        public function registerRoutes($classNamespaces):void {
+            foreach ($classNamespaces as $classNamespace) {
+                $reflector = new ReflectionClass($classNamespace);
+                $routableMethodsQty = 0;
+                foreach ($reflector->getMethods() as $method) {
+                    $doc = $method->getDocComment();
+                    $path = $this->extractRoutePath($doc);
+                    $httpMethod = $this->extractRouteHttpMethod($doc);
+
+                    if (!empty($path) && !empty($httpMethod)) { // TODO - verificar se o path e o método são válidos
+                        $this->routes[$path][$httpMethod] = new Route($classNamespace, $method->getName());
+                        $routableMethodsQty++;
+                    }
+                }
+                if ($routableMethodsQty == 0) {
+                    throw new Exception("The class $classNamespace need at least one route with path and HTTP method explicit.");
+                }
             }
         }
-        public function resolve():void {
-            $path = $this->request->getPath();
-            $method = $this->request->getMethod();
 
+        private function extractRoutePath($doc) {
+            $matches = null;
+            $match = preg_match('/@path\["(\/((\d|[a-z])+\/*)+)"]/', $doc, $matches);
+
+            if ($match) {
+                return $matches[1];
+            }
+            return null;
+        }
+
+        private function extractRouteHttpMethod($doc) {
+            $matches = null;
+            $match = preg_match('/@method\["([A-Z]+)"]/', $doc, $matches);
+            if ($match) {
+                return $matches[1];
+            }
+            return null;
+        }
+
+        public function resolveRoute($path, $method):Route {
             if(empty($this->routes[$path])) {
-                $this->response->sendResponse(404, "No existing path.");
-                return;
+                throw new Exception("No existing path.");
             }
+
             if(empty($this->routes[$path][$method])) {
                 $method = strtoupper($method);
-                $this->response->sendResponse(404, "There's no method $method for this path.");
-                return;
+                throw new Exception("There's no method $method for this path.");
             }
-            $reflector = new ReflectionClass($this->routes[$path][$method]);
-            $classInstance = $reflector->newInstance();
 
-            $requestData = $this->request->getData();
-
-            ["code"=> $code, "message"=> $message, "data"=> $responseBody] = $classInstance->{$method}($requestData);
-
-            $this->response->sendResponse($code, $message, $responseBody);
+            return $this->routes[$path][$method];
         }
     }
-?>

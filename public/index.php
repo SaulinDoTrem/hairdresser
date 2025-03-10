@@ -20,14 +20,9 @@
 
     $app = new Application(dirname(__DIR__), $config);
 
-    $routes = [
-        testaController::class,
+    const ROUTES = [
         AuthController::class
     ];
 
-    foreach($routes as $route) {
-        $app->getRouter()->registerRoute($route);
-    }
-
+    $app->getRouter()->registerRoutes(ROUTES);
     $app->run();
-?>

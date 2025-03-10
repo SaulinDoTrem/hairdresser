@@ -1,17 +1,18 @@
 <?php
     namespace app\controllers;
     use app\models\Auth;
+    use app\core\Request;
+
     class AuthController{
-        const PATH = "/login";
-        public function post(array $data):array {
-            $model = new Auth();
-            $code = null;
-            $message = null;
+
+        /**
+         * @path["/api/v1/auth"]
+         * @method["POST"]
+         */
+        public function login(Request $request):array {
+            //TODO - Fazer autenticação
             return [
-                "code"=> $code ?? 200,
-                "message"=>$message ?? "",
-                "data"=>$model->toMap()
+                'dale' => 'porra'
             ];
         }
     }
-?>
