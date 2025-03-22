@@ -1,13 +1,14 @@
 <?php
 
     namespace app\core;
+    use app\enums\HttpMethods;
 
     class Request {
         public function getPath():string {
             return strtolower($_SERVER["REQUEST_URI"]) ?? '/';
         }
-        public function getMethod():string {
-            return strtoupper($_SERVER["REQUEST_METHOD"]);
+        public function getMethod():HttpMethods {
+            return HttpMethods::from(strtoupper($_SERVER["REQUEST_METHOD"]));
         }
         protected function getBody():array {
             $inputJson = file_get_contents("php://input");
@@ -23,11 +24,9 @@
 
             $arguments = explode("&", $arguments);
             foreach($arguments as $argument) {
-                $explodeArray = explode("=",$argument);
-                if(count($explodeArray)>1){
-                    [$key, $value] = explode("=",$argument);
-                    $requestData[$key] = $value;
-                }
+                [$key, $value] = explode("=",$argument);
+                $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+                $requestData[$key] = $value === '' || $value === null ? null : $value;
             }
 
             return $requestData;
@@ -35,13 +34,10 @@
         public function getData():array {
             $method = $this->getMethod();
 
-            if(in_array($method, ["delete", "get"])) {
+            if ($method->hasBody()) {
+                return $this->getBody();
+            } else {
                 return $this->getURIArguments();
             }
-            if(in_array($method, ["put", "post"])) {
-                return $this->getBody();
-            }
-
-            return [];
         }
     }

@@ -1,10 +1,10 @@
 <?php
 
     namespace app\core;
-    use app\controllers\testaController;
-    use Exception;
+    use app\exceptions\InternalServerException;
+    use app\exceptions\MethodNotAllowedException;
+    use app\exceptions\NotFoundException;
     use ReflectionClass;
-    use Reflector;
 
     class Router{
         /**
@@ -12,8 +12,8 @@
          */
         protected array $routes = [];
 
-        public function registerRoutes($classNamespaces):void {
-            foreach ($classNamespaces as $classNamespace) {
+        public function registerRoutes($routes):void {
+            foreach ($routes as $classNamespace) {
                 $reflector = new ReflectionClass($classNamespace);
                 $routableMethodsQty = 0;
                 foreach ($reflector->getMethods() as $method) {
@@ -22,12 +22,15 @@
                     $httpMethod = $this->extractRouteHttpMethod($doc);
 
                     if (!empty($path) && !empty($httpMethod)) { // TODO - verificar se o path e o método são válidos
-                        $this->routes[$path][$httpMethod] = new Route($classNamespace, $method->getName());
+                        $this->routes[$path][$httpMethod] = new Route(
+                            $classNamespace,
+                            $method->getName()
+                    );
                         $routableMethodsQty++;
                     }
                 }
                 if ($routableMethodsQty == 0) {
-                    throw new Exception("The class $classNamespace need at least one route with path and HTTP method explicit.");
+                    throw new InternalServerException("The class $classNamespace need at least one route with path and HTTP method explicit.");
                 }
             }
         }
@@ -53,12 +56,12 @@
 
         public function resolveRoute($path, $method):Route {
             if(empty($this->routes[$path])) {
-                throw new Exception("No existing path.");
+                throw new NotFoundException('No existing path.');
             }
 
             if(empty($this->routes[$path][$method])) {
                 $method = strtoupper($method);
-                throw new Exception("There's no method $method for this path.");
+                throw new MethodNotAllowedException("There's no method $method for this path.");
             }
 
             return $this->routes[$path][$method];

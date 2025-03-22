@@ -1,26 +1,28 @@
 <?php
     namespace app\core;
 
-    use app\core\Response;
     use app\models\AbstractModel;
     use app\core\Config;
-    use app\models\Neighborhood;
     use PDOException;
     use PDO;
     use PDOStatement;
     use ReflectionClass;
 
     class Database {
+        //TODO refatorar essa classe e descobrir um jeito de declarar o PDO fora dela
+        private PDO $connection;
 
-        public function getConnection(): array {
+        public function __construct() {
+            $this->connection = $this->getConnection()['connection'];
+        }
+
+        private function getConnection(): array {
             $connection = null;
             $message = null;
-            $inputDotEnv = 'DB_';
-
-            $host = $_ENV["{$inputDotEnv}HOST"];
-            $dbname = $_ENV["{$inputDotEnv}NAME"];
-            $user = $_ENV["{$inputDotEnv}USER"];
-            $password = $_ENV["{$inputDotEnv}PASSWORD"];
+            $host = $_ENV["DB_HOST"];
+            $dbname = $_ENV["DB_NAME"];
+            $user = $_ENV["DB_USER"];
+            $password = $_ENV["DB_PASSWORD"];
             $host = "localhost";
 
             try {
@@ -33,32 +35,35 @@
             return ["connection"=> $connection, "message"=> $message];
         }
 
-        public function execute(PDO $connection, string $query, string $errorMessage, array $params):PDOStatement|string {
+        public function execute(PDO $connection, string $query, array $params):PDOStatement|string {
             try{
                 $stmt = $connection->prepare($query);
                 $stmt->execute($params);
                 return $stmt;
             }catch(PDOException $e) {
-                die($errorMessage . $e->getMessage());
+                die($e->getMessage());
                 //return $errorMessage . $e->getMessage();
             }
         }
 
-        public function insert(PDO $connection, array $body) {
+        public function insert(string $tableName, array $parameters) {
             // $tableData = $entity->toMap();
             // if(empty($tableData))
             //     Config::httpRequest("Os dados não foram recebidos com sucesso.", 400);
 
             // unset($tableData["id"]);
 
-            // $fields = implode(", ", array_keys($tableData));
-            // $binds = implode(", ", array_pad([], count(array_keys($tableData)), "?"));
+            $fields = implode(", ", array_keys($parameters));
+            $binds = implode(", ", array_pad([], count(array_keys($parameters)), "?"));
 
-            // $query = "INSERT INTO " . $this->tableName . "(" . $fields . ") VALUES (" . $binds .");";
+
+            $query = "INSERT INTO " . $tableName . "(" . $fields . ") VALUES (" . $binds .");";
+
+            $this->execute($this->connection, $query, array_values($parameters));
 
             // $this->execute($query, "Erro ao inserir na tabela {$this->tableName}.", array_values($tableData));
 
-            // return $this->connection->lastInsertId();
+            return $this->connection->lastInsertId();
         }
 
         public function update(PDO $connection, array $body) {
@@ -190,4 +195,3 @@
         }
     }
 
-?>
