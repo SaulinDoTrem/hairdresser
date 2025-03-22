@@ -2,7 +2,7 @@
     require __DIR__.'/../vendor/autoload.php';
 
     use app\controllers\AuthController;
-    use app\controllers\testaController;
+    use app\controllers\UserController;
     use Dotenv\Dotenv;
     use app\core\Application;
 
@@ -21,8 +21,10 @@
     $app = new Application(dirname(__DIR__), $config);
 
     const ROUTES = [
-        AuthController::class
+        UserController::class,
+        AuthController::class,
     ];
 
     $app->getRouter()->registerRoutes(ROUTES);
     $app->run();
+    //TODO usar register_shutdown_function para não dropar erro inesperado

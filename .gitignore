@@ -6,5 +6,5 @@ package-lock.json
 node_modules
 .vscode
 dist
-teste.sql
+*.sql
 controllers/login.php
