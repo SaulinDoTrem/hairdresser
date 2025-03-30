@@ -72,4 +72,14 @@
                 throw new ValidateServiceException(implode(' ', $errors));
             }
         }
+
+        public function toResponseData(User $user):array {
+            // TODO criar um outro objeto pro usuário que não tenha a senha
+            // fazer um método abstrato para transformar o objeto em array para a resposta
+            return [
+                'id' => $user->getId(),
+                'name' => $user->getName(),
+                'nickname' => $user->getNickname()
+            ];
+        }
     }

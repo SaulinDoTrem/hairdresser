@@ -9,30 +9,10 @@
     use ReflectionClass;
 
     class Database {
-        //TODO refatorar essa classe e descobrir um jeito de declarar o PDO fora dela
         private PDO $connection;
 
-        public function __construct() {
-            $this->connection = $this->getConnection()['connection'];
-        }
-
-        private function getConnection(): array {
-            $connection = null;
-            $message = null;
-            $host = $_ENV["DB_HOST"];
-            $dbname = $_ENV["DB_NAME"];
-            $user = $_ENV["DB_USER"];
-            $password = $_ENV["DB_PASSWORD"];
-            $host = "localhost";
-
-            try {
-                $dsn = "mysql:host=" . $host . ";dbname=" . $dbname . ";charset=utf8";
-                $connection = new PDO($dsn, $user, $password, [PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);
-            } catch(PDOException $e) {
-                $message = "Erro ao conectar com o banco de dados. {$e->getMessage()}";
-            }
-
-            return ["connection"=> $connection, "message"=> $message];
+        public function __construct(PDO $connection) {
+            $this->connection = $connection;
         }
 
         public function execute(PDO $connection, string $query, array $params):PDOStatement|string {

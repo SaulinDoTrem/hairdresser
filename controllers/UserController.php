@@ -4,8 +4,11 @@
     use app\core\Response;
     use app\services\UserService;
     use app\daos\Dao;
-use app\enums\HttpStatus;
+    use app\enums\HttpStatus;
 
+    /**
+     * @route["/api/v1/user"]
+     */
     class UserController{
         private Dao $dao;
         private UserService $service;
@@ -16,15 +19,15 @@ use app\enums\HttpStatus;
         }
 
         /**
-         * @path["/api/v1/user"]
+         * @path["/"]
          * @method["POST"]
          */
-        public function create(Request $request, Response $response):Response {
+        public function create(Request $request, Response $response):void {
             $data = $request->getData();
             $user = $this->service->createUser($data);
             $this->service->validate($user);
             $this->dao->insert($user);
             $response->setStatusCode(HttpStatus::CREATED);
-            return $response;
+            $response->setData($this->service->toResponseData($user));
         }
     }

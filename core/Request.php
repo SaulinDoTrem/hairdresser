@@ -1,14 +1,14 @@
 <?php
 
     namespace app\core;
-    use app\enums\HttpMethods;
+    use app\enums\HttpMethod;
 
     class Request {
         public function getPath():string {
             return strtolower($_SERVER["REQUEST_URI"]) ?? '/';
         }
-        public function getMethod():HttpMethods {
-            return HttpMethods::from(strtoupper($_SERVER["REQUEST_METHOD"]));
+        public function getMethod():HttpMethod {
+            return HttpMethod::from(strtoupper($_SERVER["REQUEST_METHOD"]));
         }
         protected function getBody():array {
             $inputJson = file_get_contents("php://input");

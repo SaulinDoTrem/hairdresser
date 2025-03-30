@@ -25,6 +25,5 @@
         AuthController::class,
     ];
 
-    $app->getRouter()->registerRoutes(ROUTES);
-    $app->run();
+    $app->run(ROUTES);
     //TODO usar register_shutdown_function para não dropar erro inesperado

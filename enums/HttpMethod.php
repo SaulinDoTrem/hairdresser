@@ -1,16 +1,16 @@
 <?php
     namespace app\enums;
 
-    enum HttpMethods: string{
+    enum HttpMethod: string{
         case POST = 'POST';
         case GET = 'GET';
         case PUT = 'PUT';
         case DELETE = 'DELETE';
 
-        public function hasBody() {
+        public function hasBody():bool {
             return match($this) {
-                HttpMethods::POST, HttpMethods::PUT => true,
-                HttpMethods::DELETE, HttpMethods::GET => false,
+                HttpMethod::POST, HttpMethod::PUT => true,
+                HttpMethod::DELETE, HttpMethod::GET => false,
             };
         }
     }

@@ -2,8 +2,10 @@
 
     namespace app\core;
     use app\core\Router;
+    use app\daos\Dao;
     use app\exceptions\HttpException;
     use app\exceptions\InternalServerException;
+    use app\factories\ConnectionFactory;
     use ReflectionClass;
     use Throwable;
 
@@ -21,24 +23,20 @@
             $this->router = new Router();
         }
 
-        public function run():void {
+        public function run(array $routes):void {
             try {
-                //TODO pensar num roteamento melhor
-                // talvez não precise registrar as rotas só procurar qual bate
-                // talvez colocar a rota primária na classe primeira e a secundária na função
-                // mais aí e se uma controladora tiver uma função que não é uma rota?
-                // pensar em como vai ser feito
                 $route = $this->router->resolveRoute(
+                    $routes,
                     $this->request->getPath(),
                     $this->request->getMethod()->value
                 );
                 $method = $route->getMethodName();
                 $controller = $this->instanceController($route);
-                $this->response = $controller
+                $controller
                     ->{$method}($this->request, $this->response);
                 $this->response->sendResponse();
             } catch (Throwable $e) {
-                // throw $e;
+                throw $e;
                 //TODO botar verificação de ambiente pra mostrar o erro
                 if (!$e instanceof HttpException) {
                     // TODO mascarar o erro antes de mandar a resposta
@@ -63,11 +61,25 @@
 
             $parameterInstances = [];
             foreach ($constructParameters as $parameter) {
-                // se for a DAO tem que criar o PDO antes
-                $parameterInstances[] = new ($parameter->getType()->getName())();
+                $parameterName = $parameter->getType()->getName();
+
+                $class = $parameterName === Dao::class
+                    ? new $parameterName($this->instanceDatabase())
+                    : new $parameterName();
+                $parameterInstances[] = $class;
             }
 
             return $r->newInstanceArgs($parameterInstances);
+        }
+
+        private function instanceDatabase():Database {
+            $connection = ConnectionFactory::getConnection(
+                $_ENV['DB_HOST'],
+                $_ENV['DB_NAME'],
+                $_ENV['DB_USER'],
+                $_ENV['DB_PASSWORD'],
+            );
+            return new Database($connection);
         }
 
         public function getRouter():Router {

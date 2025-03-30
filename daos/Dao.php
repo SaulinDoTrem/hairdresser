@@ -8,7 +8,7 @@ use ReflectionClass;
     // DAO abstrata para inserir dados no banco utilizando reflexão e anotações nos objetos modelos
     class Dao {
         private Database $db;
-        public function __construct($db = new Database()) {
+        public function __construct($db) {
             $this->db = $db;
         }
 
@@ -21,8 +21,7 @@ use ReflectionClass;
             return null;
         }
 
-        public function insert($object): bool {
-            // $query = 'INSERT INTO table_name(columns) VALUES(columns_value);';
+        public function insert($object):void {
             $r = new ReflectionClass(get_class($object));
             $tableName = $this->extractTableName($r->getDocComment());
 
@@ -51,7 +50,6 @@ use ReflectionClass;
             }
 
             $insertId = $this->db->insert($tableName, $parameters);
-
-            die(var_dump($insertId, $idName));
+            $object->setId($insertId);
         }
     }
