@@ -12,7 +12,7 @@
             $pathExists = false;
             foreach ($routes as $routeClass) {
                 $reflectionClass = new ReflectionClass($routeClass);
-                $docComment = $reflectionClass->getDocComment();
+                $docComment = AnnotationHandler::getDocComment($reflectionClass);
                 if ($docComment) {
                     $routePath = AnnotationHandler::getAnnotation($docComment, Annotation::ROUTE);
                     if (!str_ends_with($routePath, '/')) {

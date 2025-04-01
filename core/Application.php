@@ -36,9 +36,10 @@
                     ->{$method}($this->request, $this->response);
                 $this->response->sendResponse();
             } catch (Throwable $e) {
-                throw $e;
-                //TODO botar verificação de ambiente pra mostrar o erro
                 if (!$e instanceof HttpException) {
+                    if ($_ENV['ENV'] == 'DEV') {
+                        throw $e;
+                    }
                     // TODO mascarar o erro antes de mandar a resposta
                     $e = new InternalServerException(
                         $e->getMessage(),
@@ -51,25 +52,31 @@
         }
 
         private function instanceController(Route $route) {
-            $class = $route->getClassNamespace();
+            $r = new ReflectionClass(
+                $route->getClassNamespace()
+            );
+            return $r->newInstanceArgs(
+                $this->instanceControllerArgs(
+                        $r
+                        ->getConstructor()
+                        ->getParameters()
+                    )
+            );
+        }
 
-            $r = new ReflectionClass($class);
-
-            $constructParameters = $r
-                ->getMethod('__construct')
-                ->getParameters();
-
+        private function instanceControllerArgs(array $constructParameters):array {
             $parameterInstances = [];
             foreach ($constructParameters as $parameter) {
                 $parameterName = $parameter->getType()->getName();
+                $r = new ReflectionClass($parameterName);
+                $constructorsArgs = [];
 
-                $class = $parameterName === Dao::class
-                    ? new $parameterName($this->instanceDatabase())
-                    : new $parameterName();
-                $parameterInstances[] = $class;
+                if ($r->getParentClass()->getName() === Dao::class) {
+                    $constructorsArgs[] = $this->instanceDatabase();
+                }
+                $parameterInstances[] = $r->newInstanceArgs($constructorsArgs);
             }
-
-            return $r->newInstanceArgs($parameterInstances);
+            return $parameterInstances;
         }
 
         private function instanceDatabase():Database {

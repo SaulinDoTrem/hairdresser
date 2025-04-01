@@ -15,35 +15,28 @@
             $this->connection = $connection;
         }
 
-        public function execute(PDO $connection, string $query, array $params):PDOStatement|string {
+        public function execute(string $query, array $params):PDOStatement {
             try{
-                $stmt = $connection->prepare($query);
+                $stmt = $this->connection->prepare($query);
                 $stmt->execute($params);
                 return $stmt;
             }catch(PDOException $e) {
-                die($e->getMessage());
-                //return $errorMessage . $e->getMessage();
+                throw $e;
             }
         }
 
         public function insert(string $tableName, array $parameters) {
-            // $tableData = $entity->toMap();
-            // if(empty($tableData))
-            //     Config::httpRequest("Os dados não foram recebidos com sucesso.", 400);
-
-            // unset($tableData["id"]);
-
             $fields = implode(", ", array_keys($parameters));
             $binds = implode(", ", array_pad([], count(array_keys($parameters)), "?"));
-
-
-            $query = "INSERT INTO " . $tableName . "(" . $fields . ") VALUES (" . $binds .");";
-
-            $this->execute($this->connection, $query, array_values($parameters));
-
-            // $this->execute($query, "Erro ao inserir na tabela {$this->tableName}.", array_values($tableData));
-
+            $query = "INSERT INTO $tableName ($fields) VALUES ($binds);";
+            $this->execute($query, array_values($parameters));
             return $this->connection->lastInsertId();
+        }
+
+        public function existsBy(string $tableName, string $columnName, mixed $value) {
+            $query = "SELECT COUNT(*) > 0 as `exists` FROM $tableName WHERE $columnName = ?";
+            $stmt = $this->execute($query, [$value]);
+            return boolval($stmt->fetch()['exists']);
         }
 
         public function update(PDO $connection, array $body) {

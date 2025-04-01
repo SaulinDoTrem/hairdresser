@@ -2,54 +2,63 @@
 
     namespace app\daos;
     use app\core\Database;
-use Exception;
-use ReflectionClass;
+    use app\enums\Annotation;
+    use app\utils\AnnotationHandler;
+    use Exception;
+    use ReflectionClass;
 
     // DAO abstrata para inserir dados no banco utilizando reflexão e anotações nos objetos modelos
-    class Dao {
+    abstract class Dao {
         private Database $db;
         public function __construct($db) {
             $this->db = $db;
         }
 
-        private function extractTableName($doc) {
-            $matches = null;
-            $match = preg_match('/@table\["([a-z_]+)"]/', $doc, $matches);
-            if ($match) {
-                return $matches[1];
-            }
-            return null;
-        }
-
-        public function insert($object):void {
+        public function insert(object $object):void {
             $r = new ReflectionClass(get_class($object));
-            $tableName = $this->extractTableName($r->getDocComment());
+            $docComment = AnnotationHandler::getDocComment($r);
+            $tableName = AnnotationHandler::getAnnotation($docComment, Annotation::TABLE);
 
             if (is_null($tableName)) {
                 //TODO melhorar isso aqui
                 throw new Exception('OBJECT IS NOT A TABLE');
             }
 
-            $idName = 'id';
+            $idName = '';
             $parameters = [];
-            foreach ($r->getProperties() as $prop) {
-                $doc = $prop->getDocComment();
-
-                $propIsColumn = mb_strpos($doc, '@column') !== false;
-                $propIsPrimaryColumn = mb_strpos($doc, '@primary') !== false;
-                if ($propIsPrimaryColumn) {
-                    $idName = $prop->getName();
-                    continue;
+            do {
+                foreach ($r->getProperties() as $prop) {
+                    $doc = $prop->getDocComment();
+                    if (AnnotationHandler::hasAnnotation($doc, Annotation::PRIMARY)) {
+                        $idName = $prop->getName();
+                        continue;
+                    }
+                    if (!AnnotationHandler::hasAnnotation($doc, Annotation::COLUMN)) {
+                        continue;
+                    }
+                    $columnName = $prop->getName();
+                    $parameters[$columnName] = $object->
+                        {'get'.ucfirst($columnName)}();
                 }
-                if (!$propIsColumn) {
-                    continue;
-                }
-                $columnName = $prop->getName();
-                $columnMethodName = 'get'. ucfirst($columnName);
-                $parameters[$columnName] = $object->{$columnMethodName}();
-            }
+                $r = $r->getParentClass();
+            }while($r);
 
             $insertId = $this->db->insert($tableName, $parameters);
-            $object->setId($insertId);
+            if ($idName !== '') {
+                $object->{'set'.ucfirst($idName)}($insertId);
+            }
+        }
+
+        protected function existsBy(string $propName, object $object, mixed $value):bool {
+            $r = new ReflectionClass(get_class($object));
+            $docComment = AnnotationHandler::getDocComment($r);
+            $tableName = AnnotationHandler::getAnnotation($docComment, Annotation::TABLE);
+
+            if (is_null($tableName)) {
+                //TODO melhorar isso aqui
+                throw new Exception('OBJECT IS NOT A TABLE');
+            }
+
+            return $this->db->existsBy($tableName, $propName, $value);
         }
     }

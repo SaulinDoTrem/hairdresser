@@ -1,34 +1,27 @@
 <?php
 
     namespace app\services;
-    use app\exceptions\ValidateServiceException;
+    use app\daos\UserDao;
     use app\models\User;
+    use app\models\UserWithPassword;
 
-    class UserService {
+    class UserService extends Service{
         const MAX_LENGTH_NAME = 255;
         const MIN_LENGTH_NAME = 3;
         const MIN_LENGTH_PASSWORD = 8;
         const MAX_LENGTH_NICKNAME = 255;
         const MIN_LENGTH_NICKNAME = 8;
 
-
         public function createUser(array $data): User {
-            $errors = [];
-            if (empty($data['name'])) {
-                $errors['name'] = 'Name can\'t be empty.';
-            }
-
-            if (empty($data['nickname'])) {
-                $errors['nickname'] = 'Nickname can\'t be empty.';
-            }
-
-            if (empty($data['password'])) {
-                $errors['password'] = 'Password can\'t be empty.';
-            }
-
-            $this->verifyValidationErrors($errors);
-
             return new User(
+                0,
+                $data['name'],
+                $data['nickname']
+            );
+        }
+
+        public function createUserWithPassword(array $data): UserWithPassword {
+            return new UserWithPassword(
                 0,
                 $data['name'],
                 $data['nickname'],
@@ -36,7 +29,7 @@
             );
         }
 
-        public function validate(User $user):void {
+        public function validateUser(User $user, UserDao $dao):array {
             $errors = [];
             $nameLength = mb_strlen($user->getName());
             if (
@@ -44,42 +37,40 @@
                 $nameLength > self::MAX_LENGTH_NAME ||
                 $nameLength < self::MIN_LENGTH_NAME
             ) {
-                $errors['name'] = 'User names can\'t be empty, have less than '. self::MIN_LENGTH_NAME .' characters or more than '. self::MAX_LENGTH_NAME .' characters';
+                $errors['name'] = 'User names can\'t be empty, have less than '. self::MIN_LENGTH_NAME .' characters or more than '. self::MAX_LENGTH_NAME .' characters.';
             }
 
             $nicknameLength = mb_strlen($user->getNickname());
-            //TODO verificar se esse nickname é único
             if (
                 empty($user->getNickname()) ||
                 $nicknameLength > self::MAX_LENGTH_NICKNAME ||
                 $nicknameLength < self::MIN_LENGTH_NICKNAME
             ) {
-                $errors['nickname'] = 'User nicknames can\'t be empty, have less than ' . self::MIN_LENGTH_NICKNAME . 'characters or more than '. self::MAX_LENGTH_NICKNAME .' characters';
+                $errors['nickname'] = 'User nicknames can\'t be empty, have less than ' . self::MIN_LENGTH_NICKNAME . 'characters or more than '. self::MAX_LENGTH_NICKNAME .' characters.';
+            } elseif ($dao->existsByNickname($user)) {
+                $errors['nickname'] = 'This nickname is already been used, try another one.';
             }
+
+            return $errors;
+        }
+
+        public function validateUserWithPassword(UserWithPassword $user, UserDao $dao):array {
+            $errors = $this->validateUser($user, $dao);
 
             if (
                 empty($user->getPassword()) ||
                 mb_strlen($user->getPassword()) < self::MIN_LENGTH_PASSWORD
             ) {
-                $errors['password'] = 'Password can\'t have less than 8 characters';
+                $errors['password'] = 'Password can\'t have less than 8 characters.';
             }
 
-            $this->verifyValidationErrors($errors);
+            return $errors;
         }
 
-        private function verifyValidationErrors(array $errors):void {
-            if (count($errors) > 0) {
-                throw new ValidateServiceException(implode(' ', $errors));
+        public function toDataObject(object $object):array {
+            if (get_class($object) === UserWithPassword::class) {
+                $object = $object->toUser();
             }
-        }
-
-        public function toResponseData(User $user):array {
-            // TODO criar um outro objeto pro usuário que não tenha a senha
-            // fazer um método abstrato para transformar o objeto em array para a resposta
-            return [
-                'id' => $user->getId(),
-                'name' => $user->getName(),
-                'nickname' => $user->getNickname()
-            ];
+            return parent::toDataObject($object);
         }
     }

@@ -1,8 +1,10 @@
 <?php
 
     namespace app\daos;
+    use app\models\User;
 
-    // Fazer DAO abstrata para inserir dados no banco utilizando reflexão e 
-    class UserDao {
-
+    class UserDao extends Dao {
+        public function existsByNickname(User $user) {
+            return $this->existsBy('nickname', $user, $user->getNickname());
+        }
     }

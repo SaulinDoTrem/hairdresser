@@ -19,21 +19,14 @@
          * @column
          */
         private string $nickname;
-        /**
-         * @column
-         */
-        private string $password;
-
         public function __construct(
             int $id = 0,
             string $name = '',
-            string $nickname = '',
-            string $password = ''
+            string $nickname = ''
         ) {
             $this->id = $id;
             $this->name = $name;
             $this->nickname = $nickname;
-            $this->password = $password;
         }
 
         public function setId($id) {
@@ -58,13 +51,5 @@
 
         public function getNickname() {
             return $this->nickname;
-        }
-
-        public function setPassword($password) {
-           $this->password = $password;
-        }
-
-        public function getPassword() {
-            return $this->password;
         }
     }
