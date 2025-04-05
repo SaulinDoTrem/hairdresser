@@ -11,21 +11,28 @@
          */
         private string $password;
 
+        /**
+         * @column
+         */
+        private string $salt;
+
         public function __construct(
             int $id = 0,
             string $name = '',
             string $nickname = '',
-            string $password = ''
+            string $password = '',
+            string $salt = ''
         ) {
             parent::__construct($id, $name, $nickname);
             $this->password = $password;
+            $this->salt = $salt;
         }
 
-        public function setPassword($password) {
+        public function setPassword($password): void {
            $this->password = $password;
         }
 
-        public function getPassword() {
+        public function getPassword(): string {
             return $this->password;
         }
 
@@ -35,5 +42,13 @@
                 $this->getName(),
                 $this->getNickname()
             );
+        }
+
+        public function getSalt(): string {
+            return $this->salt;
+        }
+
+        public function setSalt($salt): void{
+            $this->salt = $salt;
         }
     }

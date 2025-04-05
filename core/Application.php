@@ -11,13 +11,12 @@
 
     class Application {
         public static string $ROOT_DIR;
-        public static array $CONFIG;
         private Router $router;
         private Request $request;
         private Response $response;
         public function __construct(string $rootPath, array $config) {
             self::$ROOT_DIR = $rootPath;
-            self::$CONFIG = $config;
+            Settings::setConfig($config);
             $this->request = new Request();
             $this->response = new Response();
             $this->router = new Router();
@@ -37,7 +36,7 @@
                 $this->response->sendResponse();
             } catch (Throwable $e) {
                 if (!$e instanceof HttpException) {
-                    if ($_ENV['ENV'] == 'DEV') {
+                    if (Settings::$ENV == 'DEV') {
                         throw $e;
                     }
                     // TODO mascarar o erro antes de mandar a resposta
@@ -81,10 +80,10 @@
 
         private function instanceDatabase():Database {
             $connection = ConnectionFactory::getConnection(
-                $_ENV['DB_HOST'],
-                $_ENV['DB_NAME'],
-                $_ENV['DB_USER'],
-                $_ENV['DB_PASSWORD'],
+                Settings::$DB_HOST,
+                Settings::$DB_NAME,
+                Settings::$DB_USER,
+                Settings::$DB_PASSWORD,
             );
             return new Database($connection);
         }

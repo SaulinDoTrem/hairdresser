@@ -34,7 +34,7 @@
             $this->throwValidationErrorsIfExists(
                 $this->service->validateUserWithPassword($user, $this->dao)
             );
-
+            $this->service->encryptPassword($user);
             $this->dao->insert($user);
             $response->setStatusCode(HttpStatus::CREATED);
             $response->setData($this->service->toDataObject($user));

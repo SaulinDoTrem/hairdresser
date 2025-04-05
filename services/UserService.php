@@ -1,6 +1,7 @@
 <?php
 
     namespace app\services;
+    use app\core\Settings;
     use app\daos\UserDao;
     use app\models\User;
     use app\models\UserWithPassword;
@@ -65,6 +66,19 @@
             }
 
             return $errors;
+        }
+
+        private function genereteRandomSalt():string {
+            return bin2hex(random_bytes(32));
+        }
+
+        public function encryptPassword(UserWithPassword $user):void {
+            $salt = $this->genereteRandomSalt();
+            $pepper = Settings::$USER_PASSWORD_PEPPER;
+            $password = $salt.$user->getPassword().$pepper;
+            $password = password_hash($password, Settings::$USER_PASSWORD_ENCRYPT_ALGO);
+            $user->setPassword($password);
+            $user->setSalt($salt);
         }
 
         public function toDataObject(object $object):array {
