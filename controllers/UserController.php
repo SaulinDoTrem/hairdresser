@@ -4,6 +4,7 @@
     use app\core\Response;
     use app\daos\UserDao;
     use app\exceptions\ValidateClientDataException;
+    use app\models\User;
     use app\services\UserService;
     use app\enums\HttpStatus;
 
@@ -37,6 +38,19 @@
             $this->dao->insert($user);
             $response->setStatusCode(HttpStatus::CREATED);
             $response->setData($this->service->toDataObject($user));
+        }
+
+        /**
+         * @path["/"]
+         * @method["GET"]
+         */
+        public function getAll(Request $request, Response $response):void {
+            $users = [];
+            foreach ($this->dao->getAll(User::class) as $user) {
+                $users[] = $this->service->toDataObject($user);
+            }
+            $response->setData($users);
+            $response->setStatusCode(HttpStatus::OK);
         }
 
         private function validateRequestData(array $data):array {

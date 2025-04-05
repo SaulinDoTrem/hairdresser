@@ -5,6 +5,7 @@
     use app\enums\Annotation;
     use app\utils\AnnotationHandler;
     use Exception;
+    use Generator;
     use ReflectionClass;
 
     // DAO abstrata para inserir dados no banco utilizando reflexão e anotações nos objetos modelos
@@ -60,5 +61,33 @@
             }
 
             return $this->db->existsBy($tableName, $propName, $value);
+        }
+
+        public function getAll($class):Generator {
+            $originalReflection = new ReflectionClass($class);
+            $docComment = AnnotationHandler::getDocComment($originalReflection);
+            $tableName = AnnotationHandler::getAnnotation($docComment, Annotation::TABLE);
+
+            if (is_null($tableName)) {
+                //TODO melhorar isso aqui
+                throw new Exception('OBJECT IS NOT A TABLE');
+            }
+
+            $columns = [];
+            $r = $originalReflection;
+            do {
+                foreach ($r->getProperties() as $prop) {
+                    $doc = $prop->getDocComment();
+                    if (AnnotationHandler::hasAnnotation($doc, Annotation::COLUMN)) {
+                        $columns[] = $prop->getName();
+                    }
+                }
+                $r = $r->getParentClass();
+            }while($r);
+
+            $result = $this->db->select($columns, $tableName);
+            foreach ($result as $props) {
+                yield $originalReflection->newInstanceArgs($props);
+            }
         }
     }

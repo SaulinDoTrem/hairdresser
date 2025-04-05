@@ -1,8 +1,8 @@
 <?php
     namespace app\core;
 
-    use app\models\AbstractModel;
     use app\core\Config;
+    use Generator;
     use PDOException;
     use PDO;
     use PDOStatement;
@@ -15,7 +15,7 @@
             $this->connection = $connection;
         }
 
-        public function execute(string $query, array $params):PDOStatement {
+        public function execute(string $query, array $params = []):PDOStatement {
             try{
                 $stmt = $this->connection->prepare($query);
                 $stmt->execute($params);
@@ -27,7 +27,7 @@
 
         public function insert(string $tableName, array $parameters) {
             $fields = implode(", ", array_keys($parameters));
-            $binds = implode(", ", array_pad([], count(array_keys($parameters)), "?"));
+            $binds = implode(", ", array_pad([], count($parameters), "?"));
             $query = "INSERT INTO $tableName ($fields) VALUES ($binds);";
             $this->execute($query, array_values($parameters));
             return $this->connection->lastInsertId();
@@ -66,81 +66,13 @@
             // return $this->execute($query, "Erro ao deletar id {$id} da tabela {$this->tableName}.", [$id])->rowCount();
         }
 
-        public function select(PDO $connection, AbstractModel $model, int $id = null):array {
-            $selectColumns = [];
-            $joinTables = [];
-
-            $this->buildSelectWithJoin($selectColumns, $joinTables, $model::class);
-
-            $tableName = $model->getTableName();
-
-            $where = "";
-            $params = [];
-
-            if($id !== null) {
-                $params = ["id"=> $id];
-                $where = " WHERE $tableName" . ".id = :id";
+        public function select(array $columns, string $tableName):Generator {
+            $select = implode(', ', $columns);
+            $query = "SELECT $select FROM $tableName";
+            $stmt = $this->execute($query);
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                yield $row;
             }
-
-            $select = "";
-
-            foreach($selectColumns as $i => $selectColumn) {
-                $select = "$select $selectColumn as " . str_replace(".", "__", $selectColumn);
-                if($i !== array_key_last($selectColumns))
-                    $select = "$select,";
-            }
-
-            $select = "SELECT $select FROM $tableName";
-            $originalTableName = $tableName;
-
-            $join = "";
-
-            if(!empty($joinTables)) {
-                foreach($joinTables as $joinTable) {
-                    $join = "$join JOIN $joinTable ON ($joinTable" . ".id = $tableName" . ".id)";
-                    $tableName = $joinTable;
-                }
-            }
-
-            $joinTables = array_reverse($joinTables);
-            array_push($joinTables, $originalTableName);
-
-            $query = "$select$join$where;";
-
-            $queryResults = $this->execute(
-                $connection,
-                $query,
-                "Erro ao tentar fazer leitura da tabela $originalTableName.", $params
-            )->fetchAll(PDO::FETCH_ASSOC);
-
-            foreach($queryResults as $i => $queryResult) {
-                $modelJson = [];
-                foreach($joinTables as $joinTable) {
-                    $tableJson = [];
-                    foreach($queryResult as $column => $value) {
-                        if(str_starts_with($column, $joinTable)) {
-                            $columnName = explode("__", $column)[1];
-                            $tableJson[$columnName] = $value;
-                        }
-                    }
-                    $modelJson[$joinTable] = $tableJson;
-                }
-                $firstModelKey = array_key_first($modelJson);
-                $previousModelKey = $firstModelKey;
-                foreach($modelJson as $modelKey => $modelValue) {
-                    if($modelKey !== $firstModelKey) {
-                        $modelValue[$previousModelKey] = $modelJson[$previousModelKey];
-                        $modelJson[$modelKey] = $modelValue;
-                        unset($modelJson[$previousModelKey]);
-                        $previousModelKey = $modelKey;
-                    }
-                }
-                $model->fromMap($modelJson[$model->getTableName()]);
-                $queryResults[$i] = $model->toMap();
-            }
-
-            if($id === null) return $queryResults;
-            return $queryResults[0];
         }
 
         private function buildSelectWithJoin(array &$selectColumns, array &$joinTables, string $modelClassName) {
