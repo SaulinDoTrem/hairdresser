@@ -2,56 +2,61 @@
 
     namespace app\core;
     use app\enums\Annotation;
+    use app\enums\HttpMethod;
     use app\exceptions\MethodNotAllowedException;
     use app\exceptions\NotFoundException;
+    use app\routes\Route;
     use app\utils\AnnotationHandler;
     use ReflectionClass;
+    use ReflectionMethod;
 
     class Router{
-        public function resolveRoute($routes, $requestPath, $requestMethod):Route {
-            $pathExists = false;
+        private ReflectionMethod $routeMethod;
+        public function getRouteMethod():ReflectionMethod {
+            return $this->routeMethod;
+        }
+        public function resolveRoute(array $routes, Path $requestPath, HttpMethod $requestMethod):ReflectionClass {
+            $route = $this->findRoute($routes, $requestPath, $requestMethod);
+            if ($route === null) {
+                throw new NotFoundException('No existing path.');
+            } elseif ($route === false) {
+                throw new MethodNotAllowedException("There's no method {$requestMethod->value} for this path.");
+            }
+            return $route;
+        }
+
+        private function findRoute(array $routes, Path $requestPath, HttpMethod $requestMethod):ReflectionClass|null|false {
             foreach ($routes as $routeClass) {
                 $reflectionClass = new ReflectionClass($routeClass);
                 $docComment = AnnotationHandler::getDocComment($reflectionClass);
                 if ($docComment) {
                     $routePath = AnnotationHandler::getAnnotation($docComment, Annotation::ROUTE);
-                    if (!str_ends_with($routePath, '/')) {
-                        $routePath .= '/';
-                    }
-                    if (!str_ends_with($requestPath, '/')) {
-                        $requestPath .= '/';
-                    }
-                    if (str_starts_with($routePath, $requestPath)) {
-                        foreach($reflectionClass->getMethods() as $method) {
-                            $docComment = $method->getDocComment();
-                            if ($docComment) {
-                                $path = AnnotationHandler::getAnnotation($docComment, Annotation::PATH);
-                                $httpMethod = AnnotationHandler::getAnnotation($docComment, Annotation::METHOD);
+                    $routePath = new Path($routePath);
+                    if ($requestPath->isSubPath($routePath)) {
+                        foreach ($reflectionClass->getMethods() as $m) {
+                            $doc = $m->getDocComment();
+                            $httpMethod = AnnotationHandler::getAnnotation($doc, Annotation::METHOD);
+                            if (is_string($httpMethod)) {
+                                $httpMethod = HttpMethod::from($httpMethod);
+                            }
 
-                                if ($path && $httpMethod) {
-                                    if (str_starts_with($path, '/')) {
-                                        $path = substr($path, 1);
-                                    }
-                                    $routePath .= $path;
-
-                                    if ($routePath === $requestPath) {
-                                        $pathExists = true;
-
-                                        if ($requestMethod == $httpMethod) {
-                                            return new Route($routeClass, $method->getName());
-                                        }
-                                    }
+                            if ($httpMethod === $requestMethod) {
+                                $path = AnnotationHandler::getAnnotation($doc, Annotation::PATH);
+                                $path = $routePath->concat($path);
+                                if ($this->pathMatches($requestPath, $path)) {
+                                    $this->routeMethod = $m;
+                                    return $reflectionClass;
                                 }
                             }
                         }
+                        return false;
                     }
                 }
             }
+            return null;
+        }
 
-            if (!$pathExists) {
-                throw new NotFoundException('No existing path.');
-            } else {
-                throw new MethodNotAllowedException("There's no method $requestMethod for this path.");
-            }
+        private function pathMatches(Path $requestPath, Path $path):bool {
+            return $requestPath->getPath() === $path->getPath();
         }
     }

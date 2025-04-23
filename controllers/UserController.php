@@ -1,7 +1,8 @@
 <?php
     namespace app\controllers;
-    use app\core\Request;
-    use app\core\Response;
+    use app\models\ControllerResponse;
+    use app\views\Request;
+    use app\views\Response;
     use app\daos\UserDao;
     use app\exceptions\ValidateClientDataException;
     use app\models\User;
@@ -9,9 +10,9 @@
     use app\enums\HttpStatus;
 
     /**
-     * @route["/api/v1/user"]
+     * @Route["/api/v1/user"]
      */
-    class UserController{
+    class UserController extends Controller{
         private UserDao $dao;
         private UserService $service;
 
@@ -21,8 +22,8 @@
         }
 
         /**
-         * @path["/"]
-         * @method["POST"]
+         * @Path["/"]
+         * @Method["POST"]
          */
         public function create(Request $request, Response $response):void {
             $data = $request->getData();
@@ -41,16 +42,15 @@
         }
 
         /**
-         * @path["/"]
-         * @method["GET"]
+         * @Path["/"]
+         * @Method["GET"]
          */
-        public function getAll(Request $request, Response $response):void {
+        public function getAll():ControllerResponse {
             $users = [];
             foreach ($this->dao->getAll(User::class) as $user) {
                 $users[] = $this->service->toDataObject($user);
             }
-            $response->setData($users);
-            $response->setStatusCode(HttpStatus::OK);
+            return $this->Ok($users);
         }
 
         private function validateRequestData(array $data):array {

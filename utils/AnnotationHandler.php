@@ -3,6 +3,7 @@
     namespace app\utils;
     use app\enums\Annotation;
     use ReflectionClass;
+    use ReflectionProperty;
 
     class AnnotationHandler {
         public static function getAnnotation(string $docComment, Annotation $annotation):string|bool {
@@ -27,5 +28,13 @@
 
         public static function hasAnnotation(string $docComment, Annotation $annotation) {
             return mb_strpos($docComment, $annotation->value) !== false;
+        }
+
+        public static function getColumnName(ReflectionProperty $columnProperty, string $docComment) {
+            $matches = Annotation::COLUMN->matches($docComment, $columnName);
+            if ($matches) {
+                return $columnName;
+            }
+            return $columnProperty->getName();
         }
     }

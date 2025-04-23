@@ -12,7 +12,7 @@
             do {
                 $classProperties = $r->getProperties();
                 foreach ($classProperties as $p) {
-                    $dataObject[$p->getName()] = $object->{'get'.ucfirst($p->getName())}();
+                    $dataObject[$p->getName()] = $p->getValue($object);
                 }
                 $r = $r->getParentClass();
             }while($r);

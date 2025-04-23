@@ -4,14 +4,16 @@
     use app\core\Database;
     use app\enums\Annotation;
     use app\utils\AnnotationHandler;
+    use DateTime;
     use Exception;
     use Generator;
     use ReflectionClass;
+    use ReflectionProperty;
 
     // DAO abstrata para inserir dados no banco utilizando reflexão e anotações nos objetos modelos
     abstract class Dao {
         private Database $db;
-        public function __construct($db) {
+        public function __construct(Database $db) {
             $this->db = $db;
         }
 
@@ -20,7 +22,7 @@
             $docComment = AnnotationHandler::getDocComment($r);
             $tableName = AnnotationHandler::getAnnotation($docComment, Annotation::TABLE);
 
-            if (is_null($tableName)) {
+            if ($tableName == false) {
                 //TODO melhorar isso aqui
                 throw new Exception('OBJECT IS NOT A TABLE');
             }
@@ -37,9 +39,9 @@
                     if (!AnnotationHandler::hasAnnotation($doc, Annotation::COLUMN)) {
                         continue;
                     }
-                    $columnName = $prop->getName();
-                    $parameters[$columnName] = $object->
-                        {'get'.ucfirst($columnName)}();
+
+                    $columnName = AnnotationHandler::getColumnName($prop, $doc);;
+                    $parameters[$columnName] = $this->getColumnValue($object, $doc, $prop);
                 }
                 $r = $r->getParentClass();
             }while($r);
@@ -55,7 +57,7 @@
             $docComment = AnnotationHandler::getDocComment($r);
             $tableName = AnnotationHandler::getAnnotation($docComment, Annotation::TABLE);
 
-            if (is_null($tableName)) {
+            if ($tableName == false) {
                 //TODO melhorar isso aqui
                 throw new Exception('OBJECT IS NOT A TABLE');
             }
@@ -64,30 +66,68 @@
         }
 
         public function getAll($class):Generator {
-            $originalReflection = new ReflectionClass($class);
-            $docComment = AnnotationHandler::getDocComment($originalReflection);
-            $tableName = AnnotationHandler::getAnnotation($docComment, Annotation::TABLE);
+            $r = new ReflectionClass($class);
+            $tableName = $this->getTableName($r);
+            $columns = $this->getColumns($r);
+            $result = $this->db->select($columns, $tableName);
+            foreach ($result as $props) {
+                yield $this->newInstanceOfClass($r, $props);
+            }
+        }
 
-            if (is_null($tableName)) {
+        private function getTableName(ReflectionClass $r):string {
+            $docComment = AnnotationHandler::getDocComment($r);
+            $tableName = AnnotationHandler::getAnnotation($docComment, Annotation::TABLE);
+            if ($tableName == false) {
                 //TODO melhorar isso aqui
                 throw new Exception('OBJECT IS NOT A TABLE');
             }
+            return $tableName;
+        }
 
+        private function getColumns(ReflectionClass $r):array {
             $columns = [];
-            $r = $originalReflection;
             do {
                 foreach ($r->getProperties() as $prop) {
                     $doc = $prop->getDocComment();
                     if (AnnotationHandler::hasAnnotation($doc, Annotation::COLUMN)) {
-                        $columns[] = $prop->getName();
+                        $columns[] = AnnotationHandler::getColumnName($prop, $doc);
                     }
                 }
                 $r = $r->getParentClass();
             }while($r);
+            return $columns;
+        }
 
-            $result = $this->db->select($columns, $tableName);
-            foreach ($result as $props) {
-                yield $originalReflection->newInstanceArgs($props);
+        protected function getByColumn($columnName, $columnValue, $objectClass) {
+            $r = new ReflectionClass($objectClass);
+            $tableName = $this->getTableName($r);
+            $columns = $this->getColumns($r);
+            $parameters = [$columnName => $columnValue];
+            $objectArgs = $this->db->select($columns, $tableName, $parameters);
+            return $this->newInstanceOfClass($r, $objectArgs->current());
+        }
+
+        private function newInstanceOfClass(ReflectionClass $reflection, array|null $columns):object|null {
+            if (empty($columns)) {
+                return null;
             }
+            // TODO - pensar quando a coluna for um objeto como user_id -> User para a Autenticação
+            $object = $reflection->newInstance();
+            foreach ($columns as $column => $value) {
+                $object->{'set'.ucfirst($column)}($value);
+            }
+            return $object;
+        }
+
+        private function getColumnValue(object $object, string $doc, ReflectionProperty $prop) {
+            $annotation = Annotation::ONE_TO_MANY;
+            $propValue = $object->{'get'.ucfirst($prop->getName())}();
+            if (AnnotationHandler::hasAnnotation($doc, $annotation)) {
+                $columnName = AnnotationHandler::getAnnotation($doc, $annotation);
+                $propValue = $propValue->{'get'.ucfirst($columnName)}();
+            }
+
+            return $propValue;
         }
     }

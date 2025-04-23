@@ -1,8 +1,9 @@
 <?php
 
-    namespace app\core;
+    namespace app\views;
     use app\enums\HttpStatus;
     use app\exceptions\HttpException;
+    use app\models\ControllerResponse;
 
     class Response {
         private HttpStatus $statusCode;
@@ -39,5 +40,10 @@
 
         private function setResponseHeaders():void {
             header("Content-Type:application/json; charset=utf-8");
+        }
+
+        public function cast(ControllerResponse $response) {
+            $this->setData($response->getData());
+            $this->setStatusCode($response->getHttpStatus());
         }
     }

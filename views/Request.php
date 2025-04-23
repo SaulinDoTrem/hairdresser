@@ -1,14 +1,23 @@
 <?php
 
-    namespace app\core;
+    namespace app\views;
     use app\enums\HttpMethod;
+    use app\core\Path;
 
     class Request {
-        public function getPath():string {
-            return strtolower($_SERVER["REQUEST_URI"]) ?? '/';
+        private Path $path;
+        private HttpMethod $method;
+
+        public function __construct() {
+            $this->path = new Path(strtolower($_SERVER["REQUEST_URI"]) ?? '/');
+            $this->method = HttpMethod::from(strtoupper($_SERVER["REQUEST_METHOD"]));
+        }
+
+        public function getPath():Path {
+            return $this->path;
         }
         public function getMethod():HttpMethod {
-            return HttpMethod::from(strtoupper($_SERVER["REQUEST_METHOD"]));
+            return $this->method;
         }
         protected function getBody():array {
             $inputJson = file_get_contents("php://input");
@@ -17,7 +26,7 @@
 
         protected function getURIArguments():array {
             $requestData = [];
-            $arguments = explode("?", $_SERVER["REQUEST_URI"])[1] ?? "";
+            $arguments = explode("?", $this->path->getPath())[1] ?? "";
 
             if($arguments === "")
                 return $requestData;
@@ -32,9 +41,7 @@
             return $requestData;
         }
         public function getData():array {
-            $method = $this->getMethod();
-
-            if ($method->hasBody()) {
+            if ($this->method->hasBody()) {
                 return $this->getBody();
             } else {
                 return $this->getURIArguments();

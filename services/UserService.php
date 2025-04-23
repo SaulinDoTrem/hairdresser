@@ -1,7 +1,7 @@
 <?php
 
     namespace app\services;
-    use app\core\Settings;
+    use app\utils\Settings;
     use app\daos\UserDao;
     use app\models\User;
     use app\models\UserWithPassword;
@@ -41,11 +41,8 @@
                 $errors['name'] = 'User names can\'t be empty, have less than '. self::MIN_LENGTH_NAME .' characters or more than '. self::MAX_LENGTH_NAME .' characters.';
             }
 
-            $nicknameLength = mb_strlen($user->getNickname());
             if (
-                empty($user->getNickname()) ||
-                $nicknameLength > self::MAX_LENGTH_NICKNAME ||
-                $nicknameLength < self::MIN_LENGTH_NICKNAME
+                !$this->validateUserNickname($user->getNickname())
             ) {
                 $errors['nickname'] = 'User nicknames can\'t be empty, have less than ' . self::MIN_LENGTH_NICKNAME . 'characters or more than '. self::MAX_LENGTH_NICKNAME .' characters.';
             } elseif ($dao->existsByNickname($user)) {
@@ -59,8 +56,7 @@
             $errors = $this->validateUser($user, $dao);
 
             if (
-                empty($user->getPassword()) ||
-                mb_strlen($user->getPassword()) < self::MIN_LENGTH_PASSWORD
+                !$this->validateUserPassword($user->getPassword())
             ) {
                 $errors['password'] = 'Password can\'t have less than 8 characters.';
             }
@@ -74,8 +70,7 @@
 
         public function encryptPassword(UserWithPassword $user):void {
             $salt = $this->genereteRandomSalt();
-            $pepper = Settings::$USER_PASSWORD_PEPPER;
-            $password = $salt.$user->getPassword().$pepper;
+            $password = $this->createPasswordWithSaltAndPepper($user->getPassword(), $salt);
             $password = password_hash($password, Settings::$USER_PASSWORD_ENCRYPT_ALGO);
             $user->setPassword($password);
             $user->setSalt($salt);
@@ -86,5 +81,27 @@
                 $object = $object->toUser();
             }
             return parent::toDataObject($object);
+        }
+
+        public function validateUserNickname(string $nickname) {
+            $nicknameLength = mb_strlen($nickname);
+
+            return !(empty($nickname) ||
+            $nicknameLength > self::MAX_LENGTH_NICKNAME ||
+            $nicknameLength < self::MIN_LENGTH_NICKNAME);
+        }
+
+        public function validateUserPassword(string $password) {
+            return !(empty($password) ||
+            mb_strlen($password) < self::MIN_LENGTH_PASSWORD);
+        }
+
+        public function verifyPassword(UserWithPassword $user, string $password) {
+            $password = $this->createPasswordWithSaltAndPepper($password, $user->getSalt());
+            return password_verify($password, $user->getPassword());
+        }
+
+        private function createPasswordWithSaltAndPepper(string $password, string $salt) {
+            return $salt.$password.Settings::$USER_PASSWORD_PEPPER;
         }
     }

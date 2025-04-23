@@ -1,6 +1,7 @@
 <?php
     namespace app\core;
 
+    use app\connectors\DatabaseConnector;
     use app\core\Config;
     use Generator;
     use PDOException;
@@ -11,8 +12,8 @@
     class Database {
         private PDO $connection;
 
-        public function __construct(PDO $connection) {
-            $this->connection = $connection;
+        public function __construct(DatabaseConnector $connector) {
+            $this->connection = $connector->getConnection();
         }
 
         public function execute(string $query, array $params = []):PDOStatement {
@@ -66,10 +67,20 @@
             // return $this->execute($query, "Erro ao deletar id {$id} da tabela {$this->tableName}.", [$id])->rowCount();
         }
 
-        public function select(array $columns, string $tableName):Generator {
+        public function select(array $columns, string $tableName, array $parameters = []):Generator {
             $select = implode(', ', $columns);
             $query = "SELECT $select FROM $tableName";
-            $stmt = $this->execute($query);
+
+            $countParameters = count($parameters);
+            if ($countParameters > 0) {
+                $whereParameters = [];
+                foreach($parameters as $column => $value) {
+                    $whereParameters[] = "$column = :$column";
+                }
+                $query.= ' WHERE ' . implode(' AND ', $whereParameters);
+            }
+
+            $stmt = $this->execute($query, $parameters);
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 yield $row;
             }
