@@ -4,8 +4,10 @@
     use app\connectors\DatabaseConnector;
     use app\connectors\MySqlConnector;
     use app\core\Router;
+    use app\enums\Annotation;
     use app\exceptions\HttpException;
     use app\exceptions\InternalServerException;
+    use app\utils\AnnotationHandler;
     use app\utils\Settings;
     use app\views\Request;
     use app\views\Response;
@@ -14,7 +16,7 @@
     use Throwable;
 
     class Application {
-        const INTERFACES_INSTANCES = [
+        private const INTERFACES_INSTANCES = [
             DatabaseConnector::class => MySqlConnector::class
         ];
         public static string $ROOT_DIR;
@@ -90,6 +92,18 @@
         }
 
         private function getRouteMethodArgs(ReflectionMethod $method):array {
-            return [];
+            $doc = $method->getDocComment();
+            $annotation = Annotation::PARAM;
+            $docParams = AnnotationHandler::getAllAnnotations($doc, $annotation);
+            $params = [];
+            foreach ($method->getParameters() as $i => $p) {
+                $paramName = $docParams[$i][0];
+                $paramFrom = $docParams[$i][1];
+                $params[] = match($paramFrom) {
+                    Annotation::FROM_BODY => $this->request->getBody(),
+                    Annotation::FROM_QUERY => $this->request->getQueryParam($paramName)
+                };
+            }
+            return $params;
         }
     }

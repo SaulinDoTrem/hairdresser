@@ -3,20 +3,20 @@
     namespace app\models;
 
     /**
-     * @table["user"]
+     * @Table["user"]
      */
     class User {
         /**
-         * @column
-         * @primary
+         * @Column
+         * @Primary
          */
         private int $id;
         /**
-         * @column
+         * @Column
          */
         private string $name;
         /**
-         * @column
+         * @Column
          */
         private string $nickname;
         public function __construct(

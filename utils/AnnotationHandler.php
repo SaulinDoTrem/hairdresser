@@ -6,9 +6,9 @@
     use ReflectionProperty;
 
     class AnnotationHandler {
-        public static function getAnnotation(string $docComment, Annotation $annotation):string|bool {
+        public static function getAnnotation(string $docComment, Annotation $annotation, &$offset = 0):string|bool {
             $value = null;
-            if ($annotation->matches($docComment, $value)) {
+            if ($annotation->matches($docComment, $value, $offset)) {
                 return $value;
             }
             return false;
@@ -36,5 +36,17 @@
                 return $columnName;
             }
             return $columnProperty->getName();
+        }
+
+        public static function getAllAnnotations(string $docComment, Annotation $annotation) {
+            $offset = 0;
+            $annotations = [];
+            do {
+                $value = self::getAnnotation($docComment, $annotation, $offset);
+                if ($value !== false) {
+                    $annotations[] = explode(',', $value);
+                }
+            }while($value !== false);
+            return $annotations;
         }
     }

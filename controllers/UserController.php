@@ -24,9 +24,9 @@
         /**
          * @Path["/"]
          * @Method["POST"]
+         * @Param["data,fromBody"]
          */
-        public function create(Request $request, Response $response):void {
-            $data = $request->getData();
+        public function create(array $data):ControllerResponse {
             $this->throwValidationErrorsIfExists(
                 $this->validateRequestData($data)
             );
@@ -37,8 +37,7 @@
             );
             $this->service->encryptPassword($user);
             $this->dao->insert($user);
-            $response->setStatusCode(HttpStatus::CREATED);
-            $response->setData($this->service->toDataObject($user));
+            return $this->Created($this->service->toDataObject($user));
         }
 
         /**

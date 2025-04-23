@@ -12,4 +12,10 @@
                 $data
             );
         }
+        protected function Created(array $data) {
+            return new ControllerResponse(
+                HttpStatus::CREATED,
+                $data
+            );
+        }
     }

@@ -7,10 +7,12 @@
     class Request {
         private Path $path;
         private HttpMethod $method;
+        private array $queryParams;
 
         public function __construct() {
             $this->path = new Path(strtolower($_SERVER["REQUEST_URI"]) ?? '/');
             $this->method = HttpMethod::from(strtoupper($_SERVER["REQUEST_METHOD"]));
+            $this->queryParams = $this->getURIArguments();
         }
 
         public function getPath():Path {
@@ -19,9 +21,13 @@
         public function getMethod():HttpMethod {
             return $this->method;
         }
-        protected function getBody():array {
+        public function getBody():array {
             $inputJson = file_get_contents("php://input");
             return json_decode($inputJson, true);
+        }
+
+        public function getQueryParam(string $name):string {
+            return $this->queryParams[$name];
         }
 
         protected function getURIArguments():array {
@@ -39,12 +45,5 @@
             }
 
             return $requestData;
-        }
-        public function getData():array {
-            if ($this->method->hasBody()) {
-                return $this->getBody();
-            } else {
-                return $this->getURIArguments();
-            }
         }
     }

@@ -7,12 +7,12 @@
      */
     class UserWithPassword extends User {
         /**
-         * @column
+         * @Column
          */
         private string $password;
 
         /**
-         * @column
+         * @Column
          */
         private string $salt;
 
